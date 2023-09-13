@@ -72,6 +72,19 @@ class PreloadScene extends Phaser.Scene {
         repeat: 0,
       });
     }
+
+    const trackAnimSpriteCount = 2;
+    for (let i = 0; i < trackAnimSpriteCount; i++) {
+      this.anims.create({
+        key: `track-${i}-sprite`,
+        frames: this.anims.generateFrameNumbers(`track-${i}-sprite`, {
+          start: 0,
+          end: 1,
+        }),
+        frameRate: 15,
+        repeat: 0,
+      });
+    }
   }
 
   loadImages() {
@@ -120,6 +133,14 @@ class PreloadScene extends Phaser.Scene {
           frameHeight: 194,
         }
       );
+    }
+
+    const trackAnimSpriteCount = 2;
+    for (let i = 0; i < trackAnimSpriteCount; i++) {
+      this.load.spritesheet(`track-${i}-sprite`, `track-${i}-sprite.png`, {
+        frameWidth: 54 / 2,
+        frameHeight: 158,
+      });
     }
   }
 

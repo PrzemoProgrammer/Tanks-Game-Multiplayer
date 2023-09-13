@@ -2,3 +2,5 @@
 - Create body tank move anims 
 - If bullet will be far than game size destroy him
 - Change tank body size 
+- Rebuild to multiplayer
+- Repair gun prediction with mouse pointer

@@ -11,14 +11,14 @@ class Entity extends Phaser.GameObjects.Container {
     this.scene.add.existing(this);
     this.spriteID = this.config.spriteID;
     this.speed = this.config.speed;
-    this.trackOffsetX = this.config.track.offsetX;
+    this.trackOffsetX = this.config.trackAnim.offsetX;
     this.shootDelay = this.config.shootDelay;
     this.canAttack = true;
 
     this.bodyImage = this.createBody(0, 0);
     this.gunImage = this.createGun(0, 0);
-    this.leftTrackImage = this.createLeftTrack(-this.trackOffsetX, 0);
-    this.rightTrackImage = this.createLeftTrack(this.trackOffsetX, 0);
+    this.leftTrackImage = this.createLeftTrack();
+    this.rightTrackImage = this.createRightTrack();
     this.shootAnim = this.createShootAnim();
     this.healthBar = this.createHealthBar();
 
@@ -56,16 +56,17 @@ class Entity extends Phaser.GameObjects.Container {
     return gun;
   }
 
-  createLeftTrack(x, y) {
-    const sprite = SPRITE_STRUCTURE.track(this.spriteID);
-    const track = this.scene.add.image(x, y, sprite).setOrigin(0.5, 0.5);
+  createLeftTrack() {
+    const config = this.config.trackAnim;
+    const track = new AnimationManager(this.scene, config);
+    track.x = -track.x;
 
     return track;
   }
 
-  createRightTrack(x, y) {
-    const sprite = SPRITE_STRUCTURE.track(this.spriteID);
-    const track = this.scene.add.image(x, y, sprite).setOrigin(0.5, 0.5);
+  createRightTrack() {
+    const config = this.config.trackAnim;
+    const track = new AnimationManager(this.scene, config);
 
     return track;
   }
@@ -96,23 +97,32 @@ class Entity extends Phaser.GameObjects.Container {
   }
 
   moveRight() {
+    this.playTrucksAnim();
     this.body.setVelocityX(this.speed);
   }
 
   moveLeft() {
+    this.playTrucksAnim();
     this.body.setVelocityX(-this.speed);
   }
 
   moveUp() {
+    this.playTrucksAnim();
     this.body.setVelocityY(-this.speed);
   }
 
   moveDown() {
+    this.playTrucksAnim();
     this.body.setVelocityY(this.speed);
   }
 
   playIdle() {
     this.body.setVelocity(0);
+  }
+
+  playTrucksAnim() {
+    this.leftTrackImage.playAnim();
+    this.rightTrackImage.playAnim();
   }
 
   shoot() {

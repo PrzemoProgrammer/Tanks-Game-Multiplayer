@@ -8,7 +8,7 @@ const ENEMY_Y_LIMIT = GAME_HEIGHT + 100;
 const SPRITE_STRUCTURE = {
   body: (id) => `tank-${id}`,
   gun: (id) => `tank-${id}-gun`,
-  track: (id) => `tank-${id}-track`,
+  track: (id) => `track-${id}-sprite`,
 };
 
 const PLAYER_CONFIG = {
@@ -19,9 +19,9 @@ const PLAYER_CONFIG = {
   shootDelay: 1000,
   body: {
     width: 80,
-    height: 130,
+    height: 110,
     offsetX: -40,
-    offsetY: -65,
+    offsetY: -55,
   },
   bullet: {
     damage: 10,
@@ -62,8 +62,11 @@ const PLAYER_CONFIG = {
     duration: 100,
     yoyo: true,
   },
-  track: {
-    offsetX: 28,
+  trackAnim: {
+    x: 40,
+    y: 0,
+    sprite: "track-0-sprite",
+    visibleAtStart: true,
   },
 };
 
@@ -75,9 +78,9 @@ const ENEMY_CONFIG = {
   shootDelay: 1000,
   body: {
     width: 80,
-    height: 132,
-    offsetX: -42,
-    offsetY: -65,
+    height: 110,
+    offsetX: -40,
+    offsetY: -55,
   },
   bullet: {
     damage: 10,
@@ -118,7 +121,10 @@ const ENEMY_CONFIG = {
     duration: 100,
     yoyo: true,
   },
-  track: {
-    offsetX: 28,
+  trackAnim: {
+    x: 40,
+    y: 0,
+    sprite: "track-0-sprite",
+    visibleAtStart: true,
   },
 };
