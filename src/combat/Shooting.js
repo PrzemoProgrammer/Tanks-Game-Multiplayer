@@ -10,8 +10,7 @@ class ShotManager {
     this.bulletId = 0;
   }
 
-  shootBulletFrom(playerX, playerY, gun) {
-    const rotation = gun.rotation;
+  shootBulletFrom(playerX, playerY, rotation) {
     const { MathSinRotation, MathCosRotation, offsetX, offsetY } =
       calculateRotationProperties(this.bulletOffset, rotation);
     const x = playerX - 1 * MathCosRotation;

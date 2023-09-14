@@ -138,7 +138,11 @@ class Entity extends Phaser.GameObjects.Container {
   shoot() {
     this.shootingAbility.disableAttackForTime(this.shootDelay);
     this.shootAnim.playAnimAndRotate(this.gunImage.rotation);
-    this.shootingAbility.shootBulletFrom(this.x, this.y, this.gunImage);
+    this.shootingAbility.shootBulletFrom(
+      this.x,
+      this.y,
+      this.gunImage.rotation + this.rotation
+    );
     this.moveBackGunTween();
   }
 
@@ -194,7 +198,7 @@ class Entity extends Phaser.GameObjects.Container {
         this.scene.input.y
       ) - 11;
 
-    const angleDifference = targetAngle - image.rotation;
+    const angleDifference = targetAngle - (image.rotation + this.rotation);
 
     const rotationStep =
       Phaser.Math.Angle.Wrap(angleDifference) * rotationSpeed;

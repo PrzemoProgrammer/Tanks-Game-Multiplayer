@@ -1,4 +1,3 @@
-- Create body tank move anims 
 - If enemy bullet will be far than game size destroy him
 - Rebuild to multiplayer
 - After make webpack change PLAYER_CONFIG in play scene
