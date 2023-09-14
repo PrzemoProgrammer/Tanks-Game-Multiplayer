@@ -1,6 +1,5 @@
-- Tracks move anim
 - Create body tank move anims 
-- If bullet will be far than game size destroy him
-- Change tank body size 
+- If enemy bullet will be far than game size destroy him
 - Rebuild to multiplayer
-- Repair gun prediction with mouse pointer
+- After make webpack change PLAYER_CONFIG in play scene
+- After make webpack change use make HuDSceneHealthBar interactive 

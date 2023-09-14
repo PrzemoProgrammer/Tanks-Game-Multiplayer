@@ -48,6 +48,35 @@ class Button extends Phaser.GameObjects.Sprite {
 
   //! ///////////////////////////////////////////////////////////////////////////
 
+  class Entity extends Phaser.GameObjects.Container {
+    constructor(scene, config) {
+      const x = config.x;
+      const y = config.y;
+  
+      super(scene, x, y);
+      this.scene = scene;
+      this.x = x;
+      this.y = y;
+      this.config = config;
+      this.scene.add.existing(this);
+
+      this.leftTrackImage = this.createLeftTrack();
+
+  
+      this.add([
+        this.leftTrackImage,
+
+      ]);
+  
+    }
+  
+    update() {
+
+    }
+  }
+  
+  //! ///////////////////////////////////////////////////////////////////////////
+
   onClick(cb) {
     this.on("pointerdown", () => {
       this.setScale(0.9);

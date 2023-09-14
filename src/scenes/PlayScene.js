@@ -12,15 +12,10 @@ class PlayScene extends Phaser.Scene {
   create() {
     this.enemies = [];
 
-    this.startEnemyXRespawn = START_ENEMY_X_RESPAWN;
-    this.endEnemyXRespawn = END_ENEMY_X_RESPAWN;
-    this.enemyYRespawn = ENEMY_Y_RESPAWN;
-    this.enemyYLimit = ENEMY_Y_LIMIT;
-
     this.background = this.createBackground();
     this.playerShip = this.createPlayerShip();
     this.enemyShip = this.createEnemyShip();
-    this.score = this.createScore(10, 10);
+    // this.score = this.createScore(10, 10);
 
     this.addCollisions();
 
@@ -39,7 +34,9 @@ class PlayScene extends Phaser.Scene {
   }
 
   createBackground() {
-    const background = this.add.image(0, 0, "bg").setOrigin(0, 0);
+    const background = this.add
+      .image(0, 0, PLAYER_CONFIG.backgroundImage)
+      .setOrigin(0, 0);
 
     return background;
   }
@@ -63,11 +60,12 @@ class PlayScene extends Phaser.Scene {
   }
 
   updateEnemy(enemy) {
-    // enemy.moveDown();
-
-    if (enemy.y >= this.enemyYLimit) {
-      this.resetEnemyPosition(enemy);
-    }
+    // enemy.getActiveBullets()
+    // if(  checkCollisionWithObject(
+    //   bullet.body,
+    //   this.playerShip.body,
+    //   PLAYER_CONFIG.attackRange) ) {
+    //   }
   }
 
   createPlayerShip() {
@@ -111,31 +109,28 @@ class PlayScene extends Phaser.Scene {
     const playerShipBullets = this.playerShip.shootingAbility.bullets;
 
     playerShipBullets.forEach((bullet) => {
-      if (bullet.body.y <= 0) {
+      if (
+        checkCollisionWithObject(
+          bullet.body,
+          this.playerShip.body,
+          PLAYER_CONFIG.attackRange
+        )
+      ) {
         this.playerShip.destroyBullet(bullet);
       }
     });
   }
 
-  createScore(x, y) {
-    const config = {
-      fontFamily: "Arial",
-      fontSize: "30px",
-      color: "#FFFFFF",
-      stroke: "#FFFFFF",
-      strokeThickness: 1,
-    };
-    const text = "Score: ";
-    const score = new ScoreCounter(this, x, y, text, config);
-    return score;
-  }
-
-  // resetEnemyPosition(enemy) {
-  //   const randomX = getRandomNumber(
-  //     this.startEnemyXRespawn,
-  //     this.endEnemyXRespawn
-  //   );
-
-  //   enemy.setPosition(randomX, this.enemyYRespawn);
+  // createScore(x, y) {
+  //   const config = {
+  //     fontFamily: "Arial",
+  //     fontSize: "30px",
+  //     color: "#FFFFFF",
+  //     stroke: "#FFFFFF",
+  //     strokeThickness: 1,
+  //   };
+  //   const text = "Score: ";
+  //   const score = new ScoreCounter(this, x, y, text, config);
+  //   return score;
   // }
 }

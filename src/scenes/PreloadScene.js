@@ -90,7 +90,18 @@ class PreloadScene extends Phaser.Scene {
   loadImages() {
     this.load.setPath("./src/assets/images");
 
-    this.images = ["bg", "bullet", "laser", "enemy-bullet", "healthbar"];
+    this.images = [
+      "bg",
+      "bullet",
+      "laser",
+      "enemy-bullet",
+      "healthbar",
+      "health-bar",
+      "energy-bar",
+      "unitBar-container",
+      "health-icon",
+      "energy-icon",
+    ];
     this.images.forEach((img) => {
       this.load.image(img, `${img}.png`);
     });
@@ -100,11 +111,9 @@ class PreloadScene extends Phaser.Scene {
     for (let i = 0; i <= 1; i++) {
       const tankBody = "tank-" + i;
       const tankGun = "tank-" + i + "-gun";
-      const tankTrack = "tank-" + i + "-track";
 
       this.load.image(tankBody, tankBody + ".png");
       this.load.image(tankGun, tankGun + ".png");
-      this.load.image(tankTrack, tankTrack + ".png");
     }
   }
 
@@ -164,5 +173,6 @@ class PreloadScene extends Phaser.Scene {
 
   startPlayScene() {
     this.scene.start("PlayScene");
+    this.scene.start("HudScene");
   }
 }

@@ -1,4 +1,4 @@
-class HealthBar extends Phaser.GameObjects.Sprite {
+class TankHealthBar extends Phaser.GameObjects.Sprite {
   constructor(scene, config) {
     const x = config.offsetX;
     const y = config.offsetY;

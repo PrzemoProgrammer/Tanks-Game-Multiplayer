@@ -17,6 +17,8 @@ const PLAYER_CONFIG = {
   spriteID: 1,
   speed: 300,
   shootDelay: 1000,
+  attackRange: 600,
+  backgroundImage: "bg",
   body: {
     width: 80,
     height: 110,
@@ -48,6 +50,12 @@ const PLAYER_CONFIG = {
     offsetX: 0,
     offsetY: 0,
   },
+  energy: {
+    sprite: "healthbar",
+    max: 100,
+    offsetX: 0,
+    offsetY: 0,
+  },
   shootAnim: {
     x: 0,
     y: 0,
@@ -70,12 +78,32 @@ const PLAYER_CONFIG = {
   },
 };
 
+const HUD_CONFIG = {
+  health: {
+    x: 50,
+    y: 250,
+    max: PLAYER_CONFIG.health.max,
+    barSprite: "health-bar",
+    containerSprite: "unitBar-container",
+    iconImage: "health-icon",
+  },
+  energy: {
+    x: 120,
+    y: 250,
+    max: PLAYER_CONFIG.energy.max,
+    barSprite: "energy-bar",
+    containerSprite: "unitBar-container",
+    iconImage: "energy-icon",
+  },
+};
+
 const ENEMY_CONFIG = {
   x: GAME_WIDTH / 2,
   y: GAME_HEIGHT / 2,
   spriteID: 0,
   speed: 300,
   shootDelay: 1000,
+  attackRange: 600,
   body: {
     width: 80,
     height: 110,
@@ -124,7 +152,7 @@ const ENEMY_CONFIG = {
   trackAnim: {
     x: 40,
     y: 0,
-    sprite: "track-0-sprite",
+    sprite: "track-1-sprite",
     visibleAtStart: true,
   },
 };

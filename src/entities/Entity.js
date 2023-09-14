@@ -166,7 +166,7 @@ class Entity extends Phaser.GameObjects.Container {
 
   createHealthBar() {
     const config = this.config.health;
-    const healthbar = new HealthBar(this.scene, config);
+    const healthbar = new TankHealthBar(this.scene, config);
 
     return healthbar;
   }
@@ -182,7 +182,7 @@ class Entity extends Phaser.GameObjects.Container {
         this.y + image.y - this.scene.cameras.main.scrollY,
         this.scene.input.x,
         this.scene.input.y
-      ) - 80;
+      ) - 11;
 
     const angleDifference = targetAngle - image.rotation;
 
@@ -213,5 +213,9 @@ class Entity extends Phaser.GameObjects.Container {
 
   canShootAttack() {
     return this.shootingAbility.isDisabled();
+  }
+
+  getActiveBullets() {
+    return this.shootingAbility.getActiveBullets();
   }
 }

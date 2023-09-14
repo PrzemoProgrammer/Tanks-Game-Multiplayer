@@ -57,6 +57,10 @@ class ShotManager {
   isDisabled() {
     return this.canAttack;
   }
+
+  getActiveBullets() {
+    return this.bullets;
+  }
 }
 
 class Bullet extends Phaser.Physics.Arcade.Sprite {
