@@ -28,7 +28,7 @@ class AnimationManager extends Phaser.GameObjects.Sprite {
       this.offset,
       rotation
     );
-    this.setPosition(offsetX, offsetY);
+    this.setPosition(offsetX, offsetY * -1);
     this.setRotation(rotation);
     this.playAnim();
   }

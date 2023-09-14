@@ -13,6 +13,7 @@ class Entity extends Phaser.GameObjects.Container {
     this.speed = this.config.speed;
     this.trackOffsetX = this.config.trackAnim.offsetX;
     this.shootDelay = this.config.shootDelay;
+    this.turnForce = this.config.turnForce;
     this.canAttack = true;
 
     this.bodyImage = this.createBody(0, 0);
@@ -87,33 +88,42 @@ class Entity extends Phaser.GameObjects.Container {
   }
 
   setUpPhysicBody() {
-    const { width, height, offsetX, offsetY } = this.config.body;
-    const body = this.body;
+    const { radius, offsetX, offsetY } = this.config.body;
 
-    body.width = width;
-    body.height = height;
-    body.offset.x = offsetX;
-    body.offset.y = offsetY;
+    this.body.setCircle(radius);
+    this.body.offset.x = offsetX;
+    this.body.offset.y = offsetY;
   }
 
   moveRight() {
     this.playTrucksAnim();
-    this.body.setVelocityX(this.speed);
+    this.angle += this.turnForce;
   }
 
   moveLeft() {
     this.playTrucksAnim();
-    this.body.setVelocityX(-this.speed);
+    this.angle -= this.turnForce;
   }
 
   moveUp() {
     this.playTrucksAnim();
-    this.body.setVelocityY(-this.speed);
+    this.setBodyVelocity(1, -1);
   }
 
   moveDown() {
     this.playTrucksAnim();
-    this.body.setVelocityY(this.speed);
+    this.setBodyVelocity(-1, 1);
+  }
+
+  setBodyVelocity(signX, signY) {
+    const { offsetX, offsetY } = calculateRotationProperties(
+      this.speed,
+      this.rotation
+    );
+    const velocityX = signX * offsetX;
+    const velocityY = signY * offsetY;
+
+    this.body.setVelocity(velocityX, velocityY);
   }
 
   playIdle() {
@@ -201,7 +211,7 @@ class Entity extends Phaser.GameObjects.Container {
       targets: this.gunImage,
       ease: ease,
       x: -offsetX,
-      y: -offsetY,
+      y: offsetY,
       duration: duration,
       yoyo: yoyo,
     });

@@ -19,7 +19,7 @@ class ShotManager {
     const xVelocity = MathSinRotation * this.speed;
     const yVelocity = -MathCosRotation * this.speed;
 
-    const bullet = this.createBullet(x + offsetX, y + offsetY)
+    const bullet = this.createBullet(x + offsetX, y + offsetY * -1)
       .setVelocity(xVelocity, yVelocity)
       .setRotation(rotation);
 
