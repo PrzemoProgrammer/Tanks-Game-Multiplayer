@@ -1,4 +1,6 @@
-- If enemy bullet will be far than game size destroy him
-- Rebuild to multiplayer
-- After make webpack change PLAYER_CONFIG in play scene
-- After make webpack change use make HuDSceneHealthBar interactive 
+- Destroy bullet if collide with walls
+- Rebuild to multiplayer 
+- make tilemap background
+- add texture obstacles
+- handle your dead
+- wyświetlanie procentów hp w healthbar hud scene

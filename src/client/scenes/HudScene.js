@@ -12,10 +12,15 @@ export default class HudScene extends Phaser.Scene {
   get gh() {
     return GAME_HEIGHT;
   }
+
+  update() {}
+
   create() {
     this.healthBar = new HudHealthBar(this, HUD_CONFIG.health);
     this.energyBar = new HudHealthBar(this, HUD_CONFIG.energy);
   }
 
-  update() {}
+  updateHealthBar(value) {
+    this.healthBar.updateStatus(value);
+  }
 }

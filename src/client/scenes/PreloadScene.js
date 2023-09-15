@@ -95,12 +95,15 @@ export default class PreloadScene extends Phaser.Scene {
       "bullet",
       "laser",
       "enemy-bullet",
-      "healthbar",
+      "tank-healthbar",
       "health-bar",
       "energy-bar",
       "unitBar-container",
       "health-icon",
       "energy-icon",
+      "tank-health-bar-container",
+      "tank-ammo-bar-container",
+      "ammo-count-image",
     ];
     this.images.forEach((img) => {
       this.load.image(img, `${img}.png`);
@@ -172,7 +175,7 @@ export default class PreloadScene extends Phaser.Scene {
   // }
 
   startPlayScene() {
-    this.scene.start("PlayScene");
     this.scene.start("HudScene");
+    this.scene.start("PlayScene");
   }
 }

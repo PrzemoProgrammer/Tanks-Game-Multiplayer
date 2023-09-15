@@ -1,22 +1,42 @@
-export default class TankHealthBar extends Phaser.GameObjects.Sprite {
+export default class TankHealthBar extends Phaser.GameObjects.Container {
   constructor(scene, config) {
     const x = config.offsetX;
     const y = config.offsetY;
-    const sprite = config.sprite;
+    super(scene, x, y);
 
-    super(scene, x, y, sprite);
+    this.scene = scene;
+    this.config = config;
     scene.add.existing(this);
 
-    this.maxHealth = config.max;
+    this.maxHealth = this.config.max;
     this.health = this.maxHealth;
+
+    this.bar = this.createBar(-60, 4);
+    this.container = this.createContainer(0, 0);
+
+    this.add([this.container, this.bar]);
+  }
+
+  createBar(x, y) {
+    const image = this.config.image;
+    const bar = this.scene.add.image(x, y, image).setOrigin(0, 0.5);
+
+    return bar;
+  }
+
+  createContainer(x, y) {
+    const image = this.config.containerImage;
+    const container = this.scene.add.image(x, y, image);
+
+    return container;
   }
 
   updateBar() {
-    this.displayWidth = this.getHealthBarWidth();
+    this.bar.displayWidth = this.getHealthBarWidth();
   }
 
   getHealthBarWidth() {
-    return (this.health / this.maxHealth) * this.displayWidth;
+    return this.getHealthPercent() * this.bar.displayWidth;
   }
 
   getDamage(damage) {
@@ -26,5 +46,9 @@ export default class TankHealthBar extends Phaser.GameObjects.Sprite {
 
   getHealthValue() {
     return this.health;
+  }
+
+  getHealthPercent() {
+    return this.health / this.maxHealth;
   }
 }

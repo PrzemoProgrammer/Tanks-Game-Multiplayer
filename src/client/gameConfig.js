@@ -44,11 +44,25 @@ export const PLAYER_CONFIG = {
       visibleAtStart: false,
     },
   },
-  health: {
-    sprite: "healthbar",
-    max: 100,
-    offsetX: 0,
-    offsetY: 0,
+  bars: {
+    x: 0,
+    y: 0,
+    health: {
+      image: "tank-healthbar",
+      containerImage: "tank-health-bar-container",
+      max: 100,
+      offsetX: 0,
+      offsetY: -130,
+    },
+    ammoBar: {
+      image: "ammo-count-image",
+      imageWidth: 17,
+      containerImage: "tank-ammo-bar-container",
+      ammoCount: 5,
+      maxAmmo: 10,
+      offsetX: -100,
+      offsetY: -100,
+    },
   },
   energy: {
     sprite: "healthbar",
@@ -89,7 +103,7 @@ export const HUD_CONFIG = {
   health: {
     x: 50,
     y: 250,
-    max: PLAYER_CONFIG.health.max,
+    max: PLAYER_CONFIG.bars.health.max,
     barSprite: "health-bar",
     containerSprite: "unitBar-container",
     iconImage: "health-icon",
@@ -136,7 +150,27 @@ export const ENEMY_CONFIG = {
       visibleAtStart: false,
     },
   },
-  health: {
+  bars: {
+    x: 0,
+    y: 0,
+    health: {
+      image: "tank-healthbar",
+      containerImage: "tank-health-bar-container",
+      max: 100,
+      offsetX: 0,
+      offsetY: -100,
+    },
+    ammoBar: {
+      image: "ammo-count-image",
+      imageWidth: 17,
+      containerImage: "tank-ammo-bar-container",
+      ammoCount: 10,
+      maxAmmo: 10,
+      offsetX: -100,
+      offsetY: -70,
+    },
+  },
+  energy: {
     sprite: "healthbar",
     max: 100,
     offsetX: 0,

@@ -1,7 +1,7 @@
 import { SPRITE_STRUCTURE } from "../gameConfig";
 import calculateRotationProperties from "../helper/calculateRotationProperties";
 import AnimationManager from "../utils/AnimationManager";
-import TankHealthBar from "../components/TankHealthBar";
+import TankBars from "../components/TankBarsLabel";
 import ShotManager from "../combat/Shooting";
 
 export default class Entity extends Phaser.GameObjects.Container {
@@ -27,8 +27,8 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.leftTrackImage = this.createLeftTrack();
     this.rightTrackImage = this.createRightTrack();
     this.shootAnim = this.createShootAnim();
-    this.healthBar = this.createHealthBar();
     this.destroyAnim = this.createDestroyAnim();
+    this.tankBars = this.createTankBars();
 
     this.add([
       this.leftTrackImage,
@@ -36,7 +36,6 @@ export default class Entity extends Phaser.GameObjects.Container {
       this.bodyImage,
       this.gunImage,
       this.shootAnim,
-      this.healthBar,
       this.destroyAnim,
     ]);
 
@@ -49,6 +48,7 @@ export default class Entity extends Phaser.GameObjects.Container {
       this.gunImage,
       this.config.gun.rotateSpeed
     );
+    this.setTankBarsPosition(this.x, this.y);
   }
 
   createBody(x, y) {
@@ -186,11 +186,11 @@ export default class Entity extends Phaser.GameObjects.Container {
     return this.body.height;
   }
 
-  createHealthBar() {
-    const config = this.config.health;
-    const healthbar = new TankHealthBar(this.scene, config);
+  createTankBars() {
+    const config = this.config.bars;
+    const bars = new TankBars(this.scene, config);
 
-    return healthbar;
+    return bars;
   }
 
   getBulletDamageValue() {
@@ -240,15 +240,24 @@ export default class Entity extends Phaser.GameObjects.Container {
   }
 
   getDamage(damage) {
-    this.healthBar.getDamage(damage);
+    this.tankBars.healthBar.getDamage(damage);
   }
 
   destroyVehicle() {
     this.disablePhysicsBody();
     this.setAlphaTween(0);
+    this.destroyTankBars();
     this.destroyAnim.playAnim(() => {
       this.destroy();
     });
+  }
+
+  destroyTankBars() {
+    this.tankBars.destroy();
+  }
+
+  setTankBarsPosition(x, y) {
+    this.tankBars.setPosition(x, y);
   }
 
   disablePhysicsBody() {
@@ -256,7 +265,7 @@ export default class Entity extends Phaser.GameObjects.Container {
   }
 
   isDead() {
-    return this.healthBar.getHealthValue() <= 0;
+    return this.tankBars.healthBar.getHealthValue() <= 0;
   }
 
   canShootAttack() {
@@ -272,6 +281,10 @@ export default class Entity extends Phaser.GameObjects.Container {
     const anim = new AnimationManager(this.scene, config);
 
     return anim;
+  }
+
+  getHealthBarPercent() {
+    return this.tankBars.healthBar.getHealthPercent();
   }
 
   setAlphaTween(value) {

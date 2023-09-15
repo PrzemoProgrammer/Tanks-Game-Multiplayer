@@ -13,7 +13,7 @@ export default class HudHealthBar extends Phaser.GameObjects.Container {
     this.maxHealth = this.config.max;
     this.health = this.maxHealth;
 
-    this.bar = this.createBar(0, -5);
+    this.bar = this.createBar(0, 190);
     this.icon = this.createIcon(0, 215);
     this.barContainer = this.createBarContainer(0, 0);
 
@@ -23,6 +23,7 @@ export default class HudHealthBar extends Phaser.GameObjects.Container {
   createBar(x, y) {
     const sprite = this.config.barSprite;
     const bar = this.scene.add.image(x, y, sprite);
+    bar.setOrigin(0.5, 1);
 
     return bar;
   }
@@ -41,16 +42,28 @@ export default class HudHealthBar extends Phaser.GameObjects.Container {
     return icon;
   }
 
-  updateBar() {
-    this.displayWidth = this.getHealthBarWidth();
+  updateStatus(value) {
+    this.bar.displayHeight = value * this.bar.height;
   }
 
-  getHealthBarWidth() {
-    return (this.health / this.maxHealth) * this.displayWidth;
-  }
-
-  getDamage(damage) {
-    this.health -= damage;
-    this.updateBar();
-  }
+  // createText(x,y){
+  //   const text = this.scene.add.text(
+  //       x,
+  //       y,
+  //       "",
+  //       {
+  //         fontFamily: "Arial",
+  //         fontSize: "30px",
+  //         color: "#FF0000",
+  //       }
+  //     )
+  //     .setOrigin(0.5)
+  //     .setFontSize(60)
+  //     .setText(text)
+  //     .setColor(color)
+  //     .setStroke("#000000")
+  //     .setPadding(50, 0, 0, 0)
+  //     .setWordWrapWidth(200);
+  //   return text
+  // }
 }

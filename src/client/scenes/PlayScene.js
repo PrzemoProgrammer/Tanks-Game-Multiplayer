@@ -11,13 +11,6 @@ import Enemy from "../entities/Enemy";
 import checkCollisionWithObject from "../helper/collisionHandler";
 import setCollision from "../helper/phaserCollision";
 
-// import Players from "../entities/Players";
-// import CameraManager from "../utils/cameraManager";
-// import mapsConfig from "../../shared/config/maps/index";
-// import { PLAY_SCENE } from "./scenes";
-// import World from "../world/WorldManager";
-// import maps from "../../shared/data/maps";
-
 export default class PlayScene extends Phaser.Scene {
   constructor() {
     super("PlayScene");
@@ -32,6 +25,7 @@ export default class PlayScene extends Phaser.Scene {
   create() {
     this.enemies = [];
 
+    this.hudScene = this.scene.get("HudScene");
     this.background = this.createBackground();
     this.playerShip = this.createPlayerShip();
     this.enemyShip = this.createEnemyShip();
@@ -80,6 +74,7 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   updateEnemy(enemy) {
+    enemy.update();
     // const enemyActiveBullets = enemy.getActiveBullets()
     // enemyActiveBullets.forEach(bullet => {
     //   if(  checkCollisionWithObject(
@@ -108,6 +103,18 @@ export default class PlayScene extends Phaser.Scene {
   addCollisions() {
     this.addPlayerBulletToEnemyCollisions();
     this.addPlayerToEnemyCollision();
+    this.addEnemyBulletToPlayerCollision();
+  }
+
+  addEnemyBulletToPlayerCollision() {
+    const enemyShipBullets = this.enemyShip.shootingAbility.bullets;
+    const playerShip = this.playerShip;
+
+    setCollision(this, enemyShipBullets, playerShip, (bullet) => {
+      this.enemyShip.destroyBullet(bullet);
+      playerShip.manageVehicleCondition(this.enemyShip.getBulletDamageValue());
+      this.hudScene.updateHealthBar(playerShip.getHealthBarPercent());
+    });
   }
 
   addPlayerBulletToEnemyCollisions() {
