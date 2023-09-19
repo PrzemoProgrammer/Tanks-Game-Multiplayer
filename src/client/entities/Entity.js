@@ -21,6 +21,7 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.shootDelay = this.config.shootDelay;
     this.turnForce = this.config.turnForce;
     this.canAttack = true;
+    this.isAlive = true;
 
     this.bodyImage = this.createBody(0, 0);
     this.gunImage = this.createGun(0, 0);
@@ -44,6 +45,7 @@ export default class Entity extends Phaser.GameObjects.Container {
   }
 
   update() {
+    if (!this.isAlive) return;
     this.rotateGunTowardMousePointer(
       this.gunImage,
       this.config.gun.rotateSpeed
@@ -143,7 +145,12 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.rightTrackImage.playAnim();
   }
 
+  getShootAttackRange() {
+    return this.shootingAbility.getAttackRange();
+  }
+
   handleShoot() {
+    if (!this.isAlive) return;
     if (!this.canShootAttack()) return;
     if (this.tankBars.isAmmoBarAmmoImagesEmpty()) {
       this.tankBars.handleReloadAmmoImages();
@@ -255,11 +262,28 @@ export default class Entity extends Phaser.GameObjects.Container {
 
   destroyVehicle() {
     this.disablePhysicsBody();
+    this.setIsAlive(false);
+    // this.shootingAbility.setCanAttack(false)
     this.setAlphaTween(0);
-    this.destroyTankBars();
+    // this.destroyTankBars();
+    this.tankBars.setVisible(false);
+
     this.destroyAnim.playAnim(() => {
-      this.destroy();
+      this.setVisible(false);
+      // this.destroy();
     });
+  }
+
+  respawn() {
+    this.setIsAlive(true);
+  }
+
+  setIsAlive(value) {
+    this.isAlive = value;
+  }
+
+  isAlive() {
+    return this.isAlive;
   }
 
   destroyTankBars() {

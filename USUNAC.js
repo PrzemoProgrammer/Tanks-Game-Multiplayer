@@ -77,7 +77,7 @@ export default class ShotManager {
     this.canAttack = false;
   }
 
-  unableAttackAfterDelay(time) {
+  enableAttackAfterDelay(time) {
     this.scene.time.delayedCall(time, () => {
       this.canAttack = true;
     });
@@ -85,7 +85,7 @@ export default class ShotManager {
 
   disableAttackForTime(time) {
     this.disableAttack();
-    this.unableAttackAfterDelay(time);
+    this.enableAttackAfterDelay(time);
   }
 
   isDisabled() {

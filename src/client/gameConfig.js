@@ -18,7 +18,6 @@ export const PLAYER_CONFIG = {
   speed: 200,
   turnForce: 1,
   shootDelay: 100,
-  attackRange: 600,
   map: {
     backgroundImage: "bg",
     tilemap: {
@@ -37,6 +36,7 @@ export const PLAYER_CONFIG = {
   },
   bullet: {
     damage: 10,
+    attackRange: 600,
     sprite: "bullet",
     speed: 700,
     offset: 60,
@@ -136,8 +136,7 @@ export const ENEMY_CONFIG = {
   spriteID: 0,
   speed: 200,
   turnForce: 1,
-  shootDelay: 1000,
-  attackRange: 900,
+  shootDelay: 200,
   body: {
     radius: 60,
     offsetX: -60,
@@ -145,9 +144,11 @@ export const ENEMY_CONFIG = {
   },
   bullet: {
     damage: 20,
+    attackRange: 900,
     sprite: "enemy-bullet",
     speed: 700,
     offset: 60,
+    startCount: 15,
     body: {
       width: 12,
       height: 20,
@@ -176,6 +177,7 @@ export const ENEMY_CONFIG = {
       image: "ammo-count-image",
       imageWidth: 17,
       containerImage: "tank-ammo-bar-container",
+      resetDelayTime: 3000,
       ammoCount: 10,
       maxAmmo: 10,
       offsetX: -100,

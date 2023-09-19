@@ -8,6 +8,7 @@ export default class ShotManager {
     this.speed = this.config.speed;
     this.bulletOffset = this.config.offset;
     this.bulletsOnStartCount = this.config.startCount;
+    this.attackRange = this.config.attackRange;
 
     this.bulletId = 0;
     this.canAttack = true;
@@ -24,7 +25,8 @@ export default class ShotManager {
     const yVelocity = -MathCosRotation * this.speed;
 
     const bullet = this.bulletsOnStart.shift();
-    bullet.setInteractive(true);
+
+    bullet.setActiveAndVisible(true);
     bullet.setPosition(x + offsetX, y + offsetY * -1);
     bullet.setRotation(rotation);
     bullet.move(xVelocity, yVelocity);
@@ -37,7 +39,7 @@ export default class ShotManager {
     for (let i = 0; i < this.bulletsOnStartCount; i++) {
       const bullet = this.createBullet(0, 0);
       bullet.setId(this.bulletId++);
-      bullet.setInteractive(false);
+      bullet.setActiveAndVisible(false);
       bulletsOnStart.push(bullet);
     }
     return bulletsOnStart;
@@ -57,19 +59,19 @@ export default class ShotManager {
     this.bulletsOnStart.push(removedBullet);
   }
 
-  disableAttack() {
-    this.canAttack = false;
+  setCanAttack(value) {
+    this.canAttack = value;
   }
 
-  unableAttackAfterDelay(time) {
+  enableAttackAfterDelay(time) {
     this.scene.time.delayedCall(time, () => {
       this.canAttack = true;
     });
   }
 
   disableAttackForTime(time) {
-    this.disableAttack();
-    this.unableAttackAfterDelay(time);
+    this.setCanAttack(false);
+    this.enableAttackAfterDelay(time);
   }
 
   isDisabled() {
@@ -78,6 +80,10 @@ export default class ShotManager {
 
   getActiveBullets() {
     return this.activeBullets;
+  }
+
+  getAttackRange() {
+    return this.attackRange;
   }
 }
 
@@ -137,13 +143,13 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     this.impactAnim.playAnimWithPosition(x, y);
   }
 
-  setInteractive(value) {
+  setActiveAndVisible(value) {
     this.setVisible(value);
     this.setActive(value);
   }
 
   turnOff() {
-    this.setInteractive(false);
+    this.setActiveAndVisible(false);
     this.setupImpactAnimAndPlay();
   }
 

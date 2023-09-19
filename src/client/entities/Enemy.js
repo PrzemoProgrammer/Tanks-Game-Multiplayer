@@ -10,12 +10,18 @@ export default class Enemy extends Entity {
 
   update() {
     this.tankBars.setPosition(this.x, this.y);
-    // if (this.test) return;
-    // this.scene.time.addEvent({
-    //   delay: 1000,
-    //   callback: () => this.shoot(),
-    //   loop: true,
-    // });
-    // this.test = true;
+
+    this.rotateGunTowardMousePointer(
+      this.gunImage,
+      this.config.gun.rotateSpeed
+    );
+    this.setTankBarsPosition(this.x, this.y);
+    if (this.test) return;
+    this.scene.time.addEvent({
+      delay: 1000,
+      callback: () => this.handleShoot(),
+      loop: true,
+    });
+    this.test = true;
   }
 }

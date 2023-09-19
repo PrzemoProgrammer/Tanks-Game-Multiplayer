@@ -23,7 +23,7 @@ export default class HandleInputs {
   }
 
   handleMovement() {
-    const player = this.scene.playerShip;
+    const player = this.scene.player;
 
     if (this.cursors.right.isDown) {
       player.move("right");
@@ -61,6 +61,6 @@ export default class HandleInputs {
   }
 
   onKeyUp(key) {
-    this.scene.playerShip.playIdle();
+    this.scene.player.playIdle();
   }
 }

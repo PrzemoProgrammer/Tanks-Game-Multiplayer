@@ -28,20 +28,18 @@ export default class PlayScene extends Phaser.Scene {
     this.hudScene = this.scene.get("HudScene");
     // this.background = this.createBackground();
     this.tilemapLayers = this.createTilemap();
-    this.playerShip = this.createPlayerShip();
-    this.enemyShip = this.createEnemyShip();
+    this.player = this.createPlayer();
+    this.enemy = this.createEnemy();
 
-    this.addCollisions();
-
+    this.addPlayerCollisions();
     this.setupCamera();
     this.mouseInput = new MouseControl(this);
     this.handleInputs = new HandleInputs(this);
   }
 
   update() {
-    this.playerShip.update();
+    this.updatePlayer();
     this.updateEnemies();
-    this.checkPlayerBulletRange();
     this.handleInputs.handleMovement();
     this.updateVisibleTiles();
   }
@@ -78,11 +76,11 @@ export default class PlayScene extends Phaser.Scene {
   setupCamera() {
     const worldWidth = this.tilemapLayers.ground.displayWidth;
     const worldHeight = this.tilemapLayers.ground.displayHeight;
-    const cameraX = -this.playerShip.getBodyWidth() / 2;
-    const cameraY = -this.playerShip.getBodyHeight() / 2;
+    const cameraX = -this.player.getBodyWidth() / 2;
+    const cameraY = -this.player.getBodyHeight() / 2;
 
     this.cameras.main.startFollow(
-      this.playerShip,
+      this.player,
       true,
       0.5,
       0.5,
@@ -93,96 +91,99 @@ export default class PlayScene extends Phaser.Scene {
     this.setWorldBounce(worldWidth, worldHeight);
   }
 
+  updatePlayer() {
+    this.player.update();
+    this.checkEntityBulletRange(this.player);
+  }
+
   updateEnemies() {
     for (let i = 0; i < this.enemies.length; i++) {
       const enemy = this.enemies[i];
       enemy.update();
+      this.checkEntityBulletRange(enemy);
     }
-    // const enemyActiveBullets = enemy.getActiveBullets()
-    // enemyActiveBullets.forEach(bullet => {
-    //   if(  checkCollisionWithObject(
-    //     bullet.body,
-    //     this.playerShip.body,
-    //     PLAYER_CONFIG.attackRange) ) {
-    //     }
-    // })
   }
 
-  createPlayerShip() {
+  createPlayer() {
     const config = PLAYER_CONFIG;
     const player = new Player(this, config);
 
     return player;
   }
 
-  createEnemyShip() {
+  createEnemy() {
     const config = ENEMY_CONFIG;
     const enemy = new Enemy(this, config);
+    this.addEnemyCollisions(enemy);
     this.enemies.push(enemy);
 
     return enemy;
   }
 
-  addCollisions() {
+  addPlayerCollisions() {
     this.addPlayerBulletToEnemyCollisions();
     this.addPlayerToEnemyCollision();
-    this.addEnemyBulletToPlayerCollision();
     this.addPlayerCollisionWithObstacles();
-    this.addPlayerBulletCollisionWithObstacles();
+    this.addTargetBulletsCollisionWithObstacles(this.player);
+  }
+
+  addEnemyCollisions(enemy) {
+    this.addTargetBulletsCollisionWithObstacles(enemy);
+    this.addEnemyBulletToPlayerCollision(enemy);
   }
 
   addPlayerCollisionWithObstacles() {
     const obstacles = this.tilemapLayers.obstacles;
-    this.physics.add.collider(this.playerShip, obstacles);
+    this.physics.add.collider(this.player, obstacles);
   }
 
-  addPlayerBulletCollisionWithObstacles() {
-    const playerShipBullets = this.playerShip.getActiveBullets();
+  addTargetBulletsCollisionWithObstacles(target) {
+    const targetBullets = target.getActiveBullets();
     const obstacles = this.tilemapLayers.obstacles;
 
-    this.physics.add.collider(playerShipBullets, obstacles, (bullet) => {
-      this.playerShip.turnOffBullet(bullet);
+    this.physics.add.collider(targetBullets, obstacles, (bullet) => {
+      target.turnOffBullet(bullet);
     });
   }
 
-  addEnemyBulletToPlayerCollision() {
-    const enemyShipBullets = this.enemyShip.getActiveBullets();
-    const playerShip = this.playerShip;
+  addEnemyBulletToPlayerCollision(enemy) {
+    const enemyBullets = enemy.getActiveBullets();
+    const player = this.player;
 
-    setCollision(this, enemyShipBullets, playerShip, (bullet) => {
-      this.enemyShip.turnOffBullet(bullet);
-      playerShip.manageVehicleCondition(this.enemyShip.getBulletDamageValue());
-      this.hudScene.updateHealthBar(playerShip.getHealthBarPercent());
+    setCollision(this, enemyBullets, player, (bullet) => {
+      enemy.turnOffBullet(bullet);
+      player.manageVehicleCondition(enemy.getBulletDamageValue());
+      this.hudScene.updateHealthBar(player.getHealthBarPercent());
     });
   }
 
   addPlayerBulletToEnemyCollisions() {
-    const playerShipBullets = this.playerShip.getActiveBullets();
-    const enemyShip = this.enemyShip;
+    const playerBullets = this.player.getActiveBullets();
+    const enemy = this.enemy;
 
-    setCollision(this, playerShipBullets, enemyShip, (bullet) => {
-      this.playerShip.turnOffBullet(bullet);
+    setCollision(this, playerBullets, enemy, (bullet) => {
+      this.player.turnOffBullet(bullet);
       // this.score.updateScore(1);
-      enemyShip.manageVehicleCondition(this.playerShip.getBulletDamageValue());
+      enemy.manageVehicleCondition(this.player.getBulletDamageValue());
     });
   }
 
   addPlayerToEnemyCollision() {
-    this.physics.add.collider(this.playerShip, this.enemyShip);
+    this.physics.add.collider(this.player, this.enemy);
   }
 
-  checkPlayerBulletRange() {
-    const playerShipBullets = this.playerShip.getActiveBullets();
+  checkEntityBulletRange(entity) {
+    const entityBullets = entity.getActiveBullets();
 
-    playerShipBullets.forEach((bullet) => {
+    entityBullets.forEach((bullet) => {
       if (
         checkCollisionWithObject(
           bullet.body,
-          this.playerShip.body,
-          PLAYER_CONFIG.attackRange
+          entity.body,
+          entity.getShootAttackRange()
         )
       ) {
-        this.playerShip.turnOffBullet(bullet);
+        entity.turnOffBullet(bullet);
       }
     });
   }
@@ -228,7 +229,7 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   playerShootAttack() {
-    this.playerShip.handleShoot();
+    this.player.handleShoot();
   }
 
   // createScore(x, y) {
