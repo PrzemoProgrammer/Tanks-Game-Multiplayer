@@ -11,12 +11,13 @@ export default class PreloadScene extends Phaser.Scene {
     this.loadImages();
     this.loadTankElements();
     this.loadSpriteSheets();
+    this.loadMaps();
+    this.loadMapsJSON();
     //   this.load.audio("bazookaShoot", "audio/bazookaShoot.mp3");
   }
 
   create() {
     this.addAnims();
-    // this.startPlayScene();
   }
 
   addAnims() {
@@ -108,6 +109,19 @@ export default class PreloadScene extends Phaser.Scene {
     this.images.forEach((img) => {
       this.load.image(img, `${img}.png`);
     });
+  }
+
+  loadMaps() {
+    this.load.setPath("./src/client/assets/images/maps");
+
+    this.images = ["battle_map_1"];
+    this.images.forEach((img) => {
+      this.load.image(img, `${img}.png`);
+    });
+  }
+
+  loadMapsJSON() {
+    this.load.tilemapTiledJSON("BattleMap_1", "BattleMap_1.json");
   }
 
   loadTankElements() {

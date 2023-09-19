@@ -7,8 +7,7 @@ export default class MouseControl {
 
   addEvents() {
     this.scene.input.on("pointerdown", (pointer) => {
-      if (!this.scene.playerShip.canShootAttack()) return;
-      this.scene.playerShip.shoot();
+      this.scene.playerShootAttack();
     });
   }
 }

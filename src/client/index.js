@@ -8,6 +8,9 @@ import { GAME_WIDTH, GAME_HEIGHT } from "./gameConfig";
 
 const config = {
   type: Phaser.AUTO,
+  powerPreference: "high-performance",
+  // antialias: false,
+  // antialiasGL: false,
   physics: {
     default: "arcade",
     arcade: {

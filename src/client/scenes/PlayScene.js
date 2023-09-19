@@ -26,55 +26,78 @@ export default class PlayScene extends Phaser.Scene {
     this.enemies = [];
 
     this.hudScene = this.scene.get("HudScene");
-    this.background = this.createBackground();
+    // this.background = this.createBackground();
+    this.tilemapLayers = this.createTilemap();
     this.playerShip = this.createPlayerShip();
     this.enemyShip = this.createEnemyShip();
-    // this.score = this.createScore(10, 10);
 
     this.addCollisions();
 
-    this.setWorldBounce();
+    this.setupCamera();
     this.mouseInput = new MouseControl(this);
     this.handleInputs = new HandleInputs(this);
   }
 
   update() {
     this.playerShip.update();
-    this.enemies.forEach((enemy) => {
-      this.updateEnemy(enemy);
-    });
+    this.updateEnemies();
     this.checkPlayerBulletRange();
     this.handleInputs.handleMovement();
+    this.updateVisibleTiles();
   }
 
-  createBackground() {
-    const background = this.add
-      .image(0, 0, PLAYER_CONFIG.backgroundImage)
-      .setOrigin(0, 0);
+  createTilemap() {
+    const tilemapJSONKey = PLAYER_CONFIG.map.tilemap.JSONKey;
+    const tilemapImage = PLAYER_CONFIG.map.tilemap.image;
+    const groundLayer = PLAYER_CONFIG.map.layers.ground;
+    const obstaclesLayer = PLAYER_CONFIG.map.layers.obstacles;
 
-    return background;
+    const tilemap = this.make.tilemap({
+      key: tilemapJSONKey,
+    });
+    const tileset = tilemap.addTilesetImage(tilemapImage);
+    const ground = tilemap.createLayer(groundLayer, tileset);
+    const obstacles = tilemap.createLayer(obstaclesLayer, tileset);
+    obstacles.setCollisionByExclusion([-1]);
+
+    return { ground, obstacles };
   }
 
-  setWorldBounce() {
-    const worldWidth = this.background.displayWidth;
-    const worldHeight = this.background.displayHeight;
+  // createBackground() {
+  //   const background = this.add
+  //     .image(0, 0, PLAYER_CONFIG.backgroundImage)
+  //     .setOrigin(0, 0);
+
+  //   return background;
+  // }
+
+  setWorldBounce(width, height) {
+    this.physics.world.setBounds(0, 0, width, height);
+  }
+
+  setupCamera() {
+    const worldWidth = this.tilemapLayers.ground.displayWidth;
+    const worldHeight = this.tilemapLayers.ground.displayHeight;
     const cameraX = -this.playerShip.getBodyWidth() / 2;
     const cameraY = -this.playerShip.getBodyHeight() / 2;
 
     this.cameras.main.startFollow(
       this.playerShip,
-      false,
+      true,
       0.5,
       0.5,
       cameraX,
       cameraY
     );
-    this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
+    this.setWorldBounce(worldWidth, worldHeight);
   }
 
-  updateEnemy(enemy) {
-    enemy.update();
+  updateEnemies() {
+    for (let i = 0; i < this.enemies.length; i++) {
+      const enemy = this.enemies[i];
+      enemy.update();
+    }
     // const enemyActiveBullets = enemy.getActiveBullets()
     // enemyActiveBullets.forEach(bullet => {
     //   if(  checkCollisionWithObject(
@@ -104,38 +127,52 @@ export default class PlayScene extends Phaser.Scene {
     this.addPlayerBulletToEnemyCollisions();
     this.addPlayerToEnemyCollision();
     this.addEnemyBulletToPlayerCollision();
+    this.addPlayerCollisionWithObstacles();
+    this.addPlayerBulletCollisionWithObstacles();
+  }
+
+  addPlayerCollisionWithObstacles() {
+    const obstacles = this.tilemapLayers.obstacles;
+    this.physics.add.collider(this.playerShip, obstacles);
+  }
+
+  addPlayerBulletCollisionWithObstacles() {
+    const playerShipBullets = this.playerShip.getActiveBullets();
+    const obstacles = this.tilemapLayers.obstacles;
+
+    this.physics.add.collider(playerShipBullets, obstacles, (bullet) => {
+      this.playerShip.turnOffBullet(bullet);
+    });
   }
 
   addEnemyBulletToPlayerCollision() {
-    const enemyShipBullets = this.enemyShip.shootingAbility.bullets;
+    const enemyShipBullets = this.enemyShip.getActiveBullets();
     const playerShip = this.playerShip;
 
     setCollision(this, enemyShipBullets, playerShip, (bullet) => {
-      this.enemyShip.destroyBullet(bullet);
+      this.enemyShip.turnOffBullet(bullet);
       playerShip.manageVehicleCondition(this.enemyShip.getBulletDamageValue());
       this.hudScene.updateHealthBar(playerShip.getHealthBarPercent());
     });
   }
 
   addPlayerBulletToEnemyCollisions() {
-    const playerShipBullets = this.playerShip.shootingAbility.bullets;
+    const playerShipBullets = this.playerShip.getActiveBullets();
     const enemyShip = this.enemyShip;
 
     setCollision(this, playerShipBullets, enemyShip, (bullet) => {
-      this.playerShip.destroyBullet(bullet);
+      this.playerShip.turnOffBullet(bullet);
       // this.score.updateScore(1);
       enemyShip.manageVehicleCondition(this.playerShip.getBulletDamageValue());
     });
   }
 
   addPlayerToEnemyCollision() {
-    setCollision(this, this.playerShip, this.enemyShip, () => {
-      console.log("You get Hit");
-    });
+    this.physics.add.collider(this.playerShip, this.enemyShip);
   }
 
   checkPlayerBulletRange() {
-    const playerShipBullets = this.playerShip.shootingAbility.bullets;
+    const playerShipBullets = this.playerShip.getActiveBullets();
 
     playerShipBullets.forEach((bullet) => {
       if (
@@ -145,9 +182,53 @@ export default class PlayScene extends Phaser.Scene {
           PLAYER_CONFIG.attackRange
         )
       ) {
-        this.playerShip.destroyBullet(bullet);
+        this.playerShip.turnOffBullet(bullet);
       }
     });
+  }
+
+  updateVisibleTiles() {
+    const camera = this.cameras.main;
+    const tilemapLayers = this.tilemapLayers; // Twoje warstwy tilemapy
+
+    // Pobierz aktualne położenie kamery
+    const cameraX = camera.scrollX;
+    const cameraY = camera.scrollY;
+
+    // Pobierz wymiary widoku kamery
+    const cameraWidth = camera.width;
+    const cameraHeight = camera.height;
+
+    // Iteruj przez wszystkie warstwy tilemapy, które chcesz dostosować
+    for (const layerName in tilemapLayers) {
+      const layer = tilemapLayers[layerName];
+
+      // Pobierz indeksy kafelków, które są obecnie widoczne w widoku kamery
+      const leftTile = Math.floor(cameraX / layer.tileWidth);
+      const rightTile = Math.ceil((cameraX + cameraWidth) / layer.tileWidth);
+      const topTile = Math.floor(cameraY / layer.tileHeight);
+      const bottomTile = Math.ceil((cameraY + cameraHeight) / layer.tileHeight);
+
+      // Ustaw kafelki poza widokiem kamery na niewidoczne
+      layer.forEachTile(function (tile) {
+        const tileX = tile.x;
+        const tileY = tile.y;
+        if (
+          tileX < leftTile ||
+          tileX > rightTile ||
+          tileY < topTile ||
+          tileY > bottomTile
+        ) {
+          tile.setVisible(false);
+        } else {
+          tile.setVisible(true);
+        }
+      });
+    }
+  }
+
+  playerShootAttack() {
+    this.playerShip.handleShoot();
   }
 
   // createScore(x, y) {

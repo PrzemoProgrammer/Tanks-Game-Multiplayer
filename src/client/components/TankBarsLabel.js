@@ -3,7 +3,6 @@ import TankAmmoBar from "./TankAmmoBar";
 
 export default class TankBarsLabel extends Phaser.GameObjects.Container {
   constructor(scene, config) {
-    console.log(config);
     const x = config.x;
     const y = config.y;
 
@@ -32,5 +31,32 @@ export default class TankBarsLabel extends Phaser.GameObjects.Container {
     const ammoBar = new TankAmmoBar(this.scene, config);
 
     return ammoBar;
+  }
+
+  updateAmmoBar() {
+    if (this.isAmmoBarAmmoImagesEmpty()) return;
+    this.ammoBar.removeAmmoImage();
+  }
+
+  isAmmoBarAmmoImagesEmpty() {
+    return this.ammoBar.isEmpty();
+  }
+
+  resetAmmoBarAmmoImages() {
+    this.ammoBar.resetAmmoImages();
+  }
+
+  handleReloadAmmoImages() {
+    if (this.ammoBar.isReloading) return;
+    this.ammoBar.setReloading(true);
+    this.reloadAmmoImagesWithDelayTime();
+  }
+
+  reloadAmmoImagesWithDelayTime() {
+    const delayTime = this.config.ammoBar.resetDelayTime;
+    this.scene.time.delayedCall(delayTime, () => {
+      this.resetAmmoBarAmmoImages();
+      this.ammoBar.setReloading(false);
+    });
   }
 }

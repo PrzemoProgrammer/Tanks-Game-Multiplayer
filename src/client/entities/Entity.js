@@ -143,7 +143,17 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.rightTrackImage.playAnim();
   }
 
+  handleShoot() {
+    if (!this.canShootAttack()) return;
+    if (this.tankBars.isAmmoBarAmmoImagesEmpty()) {
+      this.tankBars.handleReloadAmmoImages();
+      return;
+    }
+    this.shoot();
+  }
+
   shoot() {
+    this.tankBars.updateAmmoBar();
     this.shootingAbility.disableAttackForTime(this.shootDelay);
     this.shootAnim.playAnimAndRotate(this.gunImage.rotation);
     this.shootingAbility.shootBulletFrom(
@@ -154,8 +164,8 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.moveBackGunTween();
   }
 
-  destroyBullet(bullet) {
-    this.shootingAbility.destroyBullet(bullet);
+  turnOffBullet(bullet) {
+    this.shootingAbility.turnOffBullet(bullet);
   }
 
   move(side) {

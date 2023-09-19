@@ -1,6 +1,5 @@
-- Destroy bullet if collide with walls
 - Rebuild to multiplayer 
-- make tilemap background
-- add texture obstacles
 - handle your dead
 - wyświetlanie procentów hp w healthbar hud scene
+- Make reload ammo images on ammo bar and block shooting when are empty
+- add sounds

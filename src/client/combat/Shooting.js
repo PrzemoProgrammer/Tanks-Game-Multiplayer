@@ -7,10 +7,12 @@ export default class ShotManager {
     this.config = config;
     this.speed = this.config.speed;
     this.bulletOffset = this.config.offset;
+    this.bulletsOnStartCount = this.config.startCount;
 
-    this.canAttack = true;
-    this.bullets = [];
     this.bulletId = 0;
+    this.canAttack = true;
+    this.activeBullets = [];
+    this.bulletsOnStart = this.createBulletsOnStart();
   }
 
   shootBulletFrom(playerX, playerY, rotation) {
@@ -21,12 +23,24 @@ export default class ShotManager {
     const xVelocity = MathSinRotation * this.speed;
     const yVelocity = -MathCosRotation * this.speed;
 
-    const bullet = this.createBullet(x + offsetX, y + offsetY * -1)
-      .setVelocity(xVelocity, yVelocity)
-      .setRotation(rotation);
+    const bullet = this.bulletsOnStart.shift();
+    bullet.setInteractive(true);
+    bullet.setPosition(x + offsetX, y + offsetY * -1);
+    bullet.setRotation(rotation);
+    bullet.move(xVelocity, yVelocity);
 
-    bullet.setId(this.bulletId++);
-    this.bullets.push(bullet);
+    this.activeBullets.push(bullet);
+  }
+
+  createBulletsOnStart() {
+    const bulletsOnStart = [];
+    for (let i = 0; i < this.bulletsOnStartCount; i++) {
+      const bullet = this.createBullet(0, 0);
+      bullet.setId(this.bulletId++);
+      bullet.setInteractive(false);
+      bulletsOnStart.push(bullet);
+    }
+    return bulletsOnStart;
   }
 
   createBullet(x, y) {
@@ -35,10 +49,12 @@ export default class ShotManager {
     return bullet;
   }
 
-  destroyBullet(bullet) {
-    bullet.destroy();
-    const bIndex = this.bullets.findIndex((b) => b.id === bullet.id);
-    this.bullets.splice(bIndex, 1);
+  turnOffBullet(bullet) {
+    bullet.turnOff(false);
+    bullet.stopMove();
+    const bIndex = this.activeBullets.findIndex((b) => b.id === bullet.id);
+    const removedBullet = this.activeBullets.splice(bIndex, 1)[0];
+    this.bulletsOnStart.push(removedBullet);
   }
 
   disableAttack() {
@@ -61,7 +77,7 @@ export default class ShotManager {
   }
 
   getActiveBullets() {
-    return this.bullets;
+    return this.activeBullets;
   }
 }
 
@@ -74,37 +90,31 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     this.config = config;
     this.impactAnimOffset = this.config.impactAnim.offset;
 
-    this.impactAnim = new AnimationManager(this.scene, this.config.impactAnim);
     this.id = null;
+
+    this.impactAnim = new AnimationManager(
+      this.scene,
+      this.config.impactAnim
+    ).setDepth(999);
 
     this.addPhysicsBody();
   }
 
-  destroy() {
-    super.destroy();
-    this.destroyImpactAnim();
-  }
+  // destroyImpactAnim() {
+  //   this.impactAnim.rotation = this.rotation;
+  //   const rotation = this.rotation;
 
-  destroyAll() {
-    super.destroy();
-    this.impactAnim.destroy();
-  }
+  //   const MathSinRotation = Math.sin(rotation);
+  //   const MathCosRotation = Math.cos(rotation);
+  //   const x = this.x - 1 * MathCosRotation;
+  //   const y = this.y - 1 * MathSinRotation;
+  //   const offsetX = this.impactAnimOffset * MathSinRotation;
+  //   const offsetY = this.impactAnimOffset * -MathCosRotation;
 
-  destroyImpactAnim() {
-    this.impactAnim.rotation = this.rotation;
-    const rotation = this.rotation;
-
-    const MathSinRotation = Math.sin(rotation);
-    const MathCosRotation = Math.cos(rotation);
-    const x = this.x - 1 * MathCosRotation;
-    const y = this.y - 1 * MathSinRotation;
-    const offsetX = this.impactAnimOffset * MathSinRotation;
-    const offsetY = this.impactAnimOffset * -MathCosRotation;
-
-    this.impactAnim.playAnimWithPosition(x + offsetX, y + offsetY, () => {
-      this.impactAnim.destroy();
-    });
-  }
+  //   this.impactAnim.playAnimWithPosition(x + offsetX, y + offsetY, () => {
+  //     this.impactAnim.destroy();
+  //   });
+  // }
 
   setId(id) {
     this.id = id;
@@ -123,7 +133,39 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
     this.body.offset.x = offsetX;
   }
 
-  playImpactAnim() {
-    this.impactAnim.playAnimWithPosition(this.x, this.y);
+  playImpactAnim(x, y) {
+    this.impactAnim.playAnimWithPosition(x, y);
+  }
+
+  setInteractive(value) {
+    this.setVisible(value);
+    this.setActive(value);
+  }
+
+  turnOff() {
+    this.setInteractive(false);
+    this.setupImpactAnimAndPlay();
+  }
+
+  setupImpactAnimAndPlay() {
+    this.impactAnim.rotation = this.rotation;
+    const rotation = this.rotation;
+
+    const MathSinRotation = Math.sin(rotation);
+    const MathCosRotation = Math.cos(rotation);
+    const x = this.x - 1 * MathCosRotation;
+    const y = this.y - 1 * MathSinRotation;
+    const offsetX = this.impactAnimOffset * MathSinRotation;
+    const offsetY = this.impactAnimOffset * -MathCosRotation;
+
+    this.playImpactAnim(x + offsetX, y + offsetY);
+  }
+
+  move(velocityX, velocityY) {
+    this.setVelocity(velocityX, velocityY);
+  }
+
+  stopMove() {
+    this.setVelocity(0);
   }
 }

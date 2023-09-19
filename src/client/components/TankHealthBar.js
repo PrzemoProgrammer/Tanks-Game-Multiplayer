@@ -20,6 +20,7 @@ export default class TankHealthBar extends Phaser.GameObjects.Container {
   createBar(x, y) {
     const image = this.config.image;
     const bar = this.scene.add.image(x, y, image).setOrigin(0, 0.5);
+    bar.maxWidth = bar.displayWidth;
 
     return bar;
   }
@@ -36,7 +37,7 @@ export default class TankHealthBar extends Phaser.GameObjects.Container {
   }
 
   getHealthBarWidth() {
-    return this.getHealthPercent() * this.bar.displayWidth;
+    return this.getHealthPercent() * this.bar.maxWidth;
   }
 
   getDamage(damage) {
