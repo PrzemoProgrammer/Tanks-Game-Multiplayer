@@ -1,4 +1,4 @@
-import { SPRITE_STRUCTURE } from "../gameConfig";
+import { TANK_SPRITE_STRUCTURE } from "../gameConfig";
 import calculateRotationProperties from "../helper/calculateRotationProperties";
 import AnimationManager from "../utils/AnimationManager";
 import TankBars from "../components/TankBarsLabel";
@@ -20,6 +20,7 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.trackOffsetX = this.config.trackAnim.offsetX;
     this.shootDelay = this.config.shootDelay;
     this.turnForce = this.config.turnForce;
+    this.bulletDamage = this.config.bullet.damage;
     this.canAttack = true;
     this.isAlive = true;
 
@@ -54,14 +55,14 @@ export default class Entity extends Phaser.GameObjects.Container {
   }
 
   createBody(x, y) {
-    const sprite = SPRITE_STRUCTURE.body(this.spriteID);
+    const sprite = TANK_SPRITE_STRUCTURE.body(this.spriteID);
     const body = this.scene.add.image(x, y, sprite).setOrigin(0.5, 0.5);
 
     return body;
   }
 
   createGun(x, y) {
-    const sprite = SPRITE_STRUCTURE.gun(this.spriteID);
+    const sprite = TANK_SPRITE_STRUCTURE.gun(this.spriteID);
     const gun = this.scene.add.image(x, y, sprite).setOrigin(0.5, 0.5);
 
     return gun;
@@ -211,20 +212,21 @@ export default class Entity extends Phaser.GameObjects.Container {
   }
 
   getBulletDamageValue() {
-    return this.config.bullet.damage;
+    return this.bulletDamage;
   }
 
   rotateGunTowardMousePointer(image, rotationSpeed) {
-    const targetAngle =
-      Phaser.Math.Angle.Between(
-        this.x + image.x - this.scene.cameras.main.scrollX,
-        this.y + image.y - this.scene.cameras.main.scrollY,
-        this.scene.input.x,
-        this.scene.input.y
-      ) - 11;
+    const targetAngle = Phaser.Math.Angle.Between(
+      this.x + image.x - this.scene.cameras.main.scrollX,
+      this.y + image.y - this.scene.cameras.main.scrollY,
+      this.scene.input.x,
+      this.scene.input.y
+    );
 
-    const angleDifference = targetAngle - (image.rotation + this.rotation);
+    const additionalRotation = Phaser.Math.DegToRad(90);
+    const newTargetAngle = targetAngle + additionalRotation;
 
+    const angleDifference = newTargetAngle - (image.rotation + this.rotation);
     const rotationStep =
       Phaser.Math.Angle.Wrap(angleDifference) * rotationSpeed;
 
@@ -246,9 +248,9 @@ export default class Entity extends Phaser.GameObjects.Container {
     });
   }
 
-  manageVehicleCondition(damage) {
+  manageCondition(damage) {
     this.getDamage(damage);
-    if (!this.isDead()) return;
+    if (!this.haveNoHealth()) return;
     this.destroyVehicle();
   }
 
@@ -282,10 +284,6 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.isAlive = value;
   }
 
-  isAlive() {
-    return this.isAlive;
-  }
-
   destroyTankBars() {
     this.tankBars.destroy();
   }
@@ -298,7 +296,7 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.body.enable = false;
   }
 
-  isDead() {
+  haveNoHealth() {
     return this.tankBars.healthBar.getHealthValue() <= 0;
   }
 
@@ -328,5 +326,11 @@ export default class Entity extends Phaser.GameObjects.Container {
       alpha: value,
       duration: 1000,
     });
+  }
+
+  getXY() {
+    const x = this.x;
+    const y = this.y;
+    return { x, y };
   }
 }

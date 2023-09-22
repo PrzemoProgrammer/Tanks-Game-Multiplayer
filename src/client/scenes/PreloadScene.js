@@ -72,6 +72,33 @@ export default class PreloadScene extends Phaser.Scene {
         frameRate: 15,
         repeat: 0,
       });
+
+      this.anims.create({
+        key: `helicopter-idle`,
+        frames: this.anims.generateFrameNumbers(`helicopter-sprite`, {
+          frames: [0],
+        }),
+        frameRate: 15,
+        repeat: 0,
+      });
+
+      this.anims.create({
+        key: `helicopter-crash`,
+        frames: this.anims.generateFrameNumbers(`helicopter-sprite`, {
+          frames: [1],
+        }),
+        frameRate: 15,
+        repeat: 0,
+      });
+
+      this.anims.create({
+        key: `helicopter-propeller-anim`,
+        frames: this.anims.generateFrameNumbers(`helicopter-sprite`, {
+          frames: [2, 3],
+        }),
+        frameRate: 15,
+        repeat: -1,
+      });
     }
 
     const trackAnimSpriteCount = 2;
@@ -84,6 +111,56 @@ export default class PreloadScene extends Phaser.Scene {
         }),
         frameRate: 15,
         repeat: 0,
+      });
+
+      this.anims.create({
+        key: `soldier-move-${i}`,
+        frames: this.anims.generateFrameNumbers(
+          `soldier-move-spritesheet-${i}`,
+          {
+            start: 0,
+            end: 6,
+          }
+        ),
+        frameRate: 15,
+        repeat: 0,
+      });
+
+      this.anims.create({
+        key: `soldier-move-idle-${i}`,
+        frames: this.anims.generateFrameNumbers(
+          `soldier-move-spritesheet-${i}`,
+          {
+            start: 2,
+            end: 2,
+          }
+        ),
+        frameRate: 15,
+        repeat: 0,
+      });
+
+      this.anims.create({
+        key: `soldier-shoot-${i}`,
+        frames: this.anims.generateFrameNumbers(`soldier-spritesheet-${i}`, {
+          frames: [4, 5, 6, 7],
+        }),
+        frameRate: 15,
+        repeat: 0,
+      });
+
+      this.anims.create({
+        key: `soldier-dead-${i}`,
+        frames: this.anims.generateFrameNumbers(`soldier-spritesheet-${i}`, {
+          frames: [8, 9, 10, 11],
+        }),
+        frameRate: 15,
+        repeat: 0,
+      });
+
+      this.anims.create({
+        key: `soldier-idle-${i}`,
+        frames: [{ key: `soldier-spritesheet-${i}`, frame: 0 }],
+        frameRate: 20,
       });
     }
   }
@@ -105,6 +182,9 @@ export default class PreloadScene extends Phaser.Scene {
       "tank-health-bar-container",
       "tank-ammo-bar-container",
       "ammo-count-image",
+      "rocket-bullet",
+      "mouse-pointer-viewfinder",
+      "hurt-screen",
     ];
     this.images.forEach((img) => {
       this.load.image(img, `${img}.png`);
@@ -135,39 +215,94 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   loadSpriteSheets() {
-    const shootAnimSpriteCount = 1;
-    for (let i = 0; i < shootAnimSpriteCount; i++) {
-      this.load.spritesheet(`shoot-sprite-${i}`, `shoot-sprite-${i}.png`, {
-        frameWidth: 848 / 4,
-        frameHeight: 212,
-      });
-
-      this.load.spritesheet(
-        `shoot-impact-sprite-${i}`,
-        `shoot-impact-sprite-${i}.png`,
-        {
-          frameWidth: 568 / 4,
-          frameHeight: 142,
-        }
-      );
-
-      this.load.spritesheet(
-        `object-destroy-sprite-${i}`,
-        `object-destroy-sprite-${i}.png`,
-        {
-          frameWidth: 1743 / 9,
-          frameHeight: 194,
-        }
-      );
+    for (let i = 0; i < 1; i++) {
+      this.loadShootAnimSprite(i);
+      this.loadShootImpactSprite(i);
+      this.loadObjectDestroySprite(i);
+      this.loadHelicopterSprite();
     }
 
-    const trackAnimSpriteCount = 2;
-    for (let i = 0; i < trackAnimSpriteCount; i++) {
-      this.load.spritesheet(`track-${i}-sprite`, `track-${i}-sprite.png`, {
-        frameWidth: 54 / 2,
-        frameHeight: 158,
-      });
+    for (let i = 0; i < 2; i++) {
+      this.loadTankTracksSprite(i);
+      this.loadSoldierLegsMoveSprite(i);
+      this.loadSoldiersSprite(i);
     }
+  }
+
+  loadHelicopterSprite() {
+    this.load.setPath(
+      "./src/client/assets/images/vehicles/airUnits/helicopter"
+    );
+
+    this.load.spritesheet(`helicopter-sprite`, `helicopter-sprite.png`, {
+      frameWidth: 1058 / 2,
+      frameHeight: 1058 / 2,
+    });
+  }
+
+  loadShootAnimSprite(i) {
+    this.load.setPath("./src/client/assets/images");
+    this.load.spritesheet(`shoot-sprite-${i}`, `shoot-sprite-${i}.png`, {
+      frameWidth: 848 / 4,
+      frameHeight: 212,
+    });
+  }
+
+  loadShootImpactSprite(i) {
+    this.load.setPath("./src/client/assets/images");
+    this.load.spritesheet(
+      `shoot-impact-sprite-${i}`,
+      `shoot-impact-sprite-${i}.png`,
+      {
+        frameWidth: 568 / 4,
+        frameHeight: 142,
+      }
+    );
+  }
+
+  loadObjectDestroySprite(i) {
+    this.load.setPath("./src/client/assets/images");
+    this.load.spritesheet(
+      `object-destroy-sprite-${i}`,
+      `object-destroy-sprite-${i}.png`,
+      {
+        frameWidth: 1743 / 9,
+        frameHeight: 194,
+      }
+    );
+  }
+
+  loadTankTracksSprite(i) {
+    this.load.setPath("./src/client/assets/images");
+    this.load.spritesheet(`track-${i}-sprite`, `track-${i}-sprite.png`, {
+      frameWidth: 54 / 2,
+      frameHeight: 158,
+    });
+  }
+
+  loadSoldiersSprite(i) {
+    this.load.setPath("./src/client/assets/images/soldiers");
+    this.load.spritesheet(
+      `soldier-spritesheet-${i}`,
+      `soldier-spritesheet-${i}.png`,
+      {
+        frameWidth: 853 / 4,
+        frameHeight: 639 / 3,
+      }
+    );
+  }
+
+  loadSoldierLegsMoveSprite(i) {
+    this.load.setPath("./src/client/assets/images/soldiers");
+
+    this.load.spritesheet(
+      `soldier-move-spritesheet-${i}`,
+      `soldier-move-spritesheet-${i}.png`,
+      {
+        frameWidth: 1471 / 7,
+        frameHeight: 210,
+      }
+    );
   }
 
   // loadAudio() {

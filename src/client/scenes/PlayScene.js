@@ -3,11 +3,18 @@ import {
   GAME_HEIGHT,
   PLAYER_CONFIG,
   ENEMY_CONFIG,
+  GUN_SOLDIER_CONFIG,
+  BAZOOKA_SOLDIER_CONFIG,
+  HELICOPTER_CONFIG,
+  MOUSE_POINTER_CONFIG,
 } from "../gameConfig";
 import HandleInputs from "../utils/HandleInputs";
 import MouseControl from "../utils/MouseControl";
+import MousePointerManager from "../utils/MousePointerManager";
 import Player from "../entities/Player";
 import Enemy from "../entities/Enemy";
+import Soldier from "../entities/Soldier";
+import Helicopter from "../entities/Helicopter";
 import checkCollisionWithObject from "../helper/collisionHandler";
 import setCollision from "../helper/phaserCollision";
 
@@ -30,11 +37,14 @@ export default class PlayScene extends Phaser.Scene {
     this.tilemapLayers = this.createTilemap();
     this.player = this.createPlayer();
     this.enemy = this.createEnemy();
+    this.soldier = this.createSoldier();
+    this.helicopter = this.createHelicopter();
 
     this.addPlayerCollisions();
     this.setupCamera();
     this.mouseInput = new MouseControl(this);
     this.handleInputs = new HandleInputs(this);
+    this.mousePointer = new MousePointerManager(this);
   }
 
   update() {
@@ -98,9 +108,12 @@ export default class PlayScene extends Phaser.Scene {
 
   updateEnemies() {
     for (let i = 0; i < this.enemies.length; i++) {
+      const { x, y } = this.player.getXY();
       const enemy = this.enemies[i];
       enemy.update();
+      enemy.handleRotation(x, y);
       this.checkEntityBulletRange(enemy);
+      // enemy.handleShoot(x, y);
     }
   }
 
@@ -120,8 +133,26 @@ export default class PlayScene extends Phaser.Scene {
     return enemy;
   }
 
+  createSoldier() {
+    const config = BAZOOKA_SOLDIER_CONFIG; // BAZOOKA_SOLDIER_CONFIG  GUN_SOLDIER_CONFIG
+    const soldier = new Soldier(this, config);
+    this.addEnemyCollisions(soldier);
+    this.enemies.push(soldier);
+
+    return soldier;
+  }
+
+  createHelicopter() {
+    const config = HELICOPTER_CONFIG;
+    const helicopter = new Helicopter(this, config);
+    this.addEnemyCollisions(helicopter);
+    this.enemies.push(helicopter);
+
+    return helicopter;
+  }
+
   addPlayerCollisions() {
-    this.addPlayerBulletToEnemyCollisions();
+    // this.addPlayerBulletToEnemyCollisions();
     this.addPlayerToEnemyCollision();
     this.addPlayerCollisionWithObstacles();
     this.addTargetBulletsCollisionWithObstacles(this.player);
@@ -129,7 +160,8 @@ export default class PlayScene extends Phaser.Scene {
 
   addEnemyCollisions(enemy) {
     this.addTargetBulletsCollisionWithObstacles(enemy);
-    this.addEnemyBulletToPlayerCollision(enemy);
+    this.addTargetBulletToPlayerCollision(enemy);
+    this.addPlayerBulletWithTargetCollisions(enemy);
   }
 
   addPlayerCollisionWithObstacles() {
@@ -146,27 +178,37 @@ export default class PlayScene extends Phaser.Scene {
     });
   }
 
-  addEnemyBulletToPlayerCollision(enemy) {
-    const enemyBullets = enemy.getActiveBullets();
+  addTargetBulletToPlayerCollision(target) {
+    const targetBullets = target.getActiveBullets();
     const player = this.player;
 
-    setCollision(this, enemyBullets, player, (bullet) => {
-      enemy.turnOffBullet(bullet);
-      player.manageVehicleCondition(enemy.getBulletDamageValue());
-      this.hudScene.updateHealthBar(player.getHealthBarPercent());
+    setCollision(this, targetBullets, player, (bullet) => {
+      target.turnOffBullet(bullet);
+      player.manageCondition(target.getBulletDamageValue());
+      this.hudScene.handlePlayerStatus(player.getHealthBarPercent());
     });
   }
 
-  addPlayerBulletToEnemyCollisions() {
+  addPlayerBulletWithTargetCollisions(target) {
     const playerBullets = this.player.getActiveBullets();
-    const enemy = this.enemy;
 
-    setCollision(this, playerBullets, enemy, (bullet) => {
+    setCollision(this, playerBullets, target, (bullet) => {
       this.player.turnOffBullet(bullet);
       // this.score.updateScore(1);
-      enemy.manageVehicleCondition(this.player.getBulletDamageValue());
+      target.manageCondition(this.player.getBulletDamageValue());
     });
   }
+
+  // addPlayerBulletToEnemyCollisions() {
+  //   const playerBullets = this.player.getActiveBullets();
+  //   const enemy = this.enemy;
+
+  //   setCollision(this, playerBullets, enemy, (bullet) => {
+  //     this.player.turnOffBullet(bullet);
+  //     // this.score.updateScore(1);
+  //     enemy.manageCondition(this.player.getBulletDamageValue());
+  //   });
+  // }
 
   addPlayerToEnemyCollision() {
     this.physics.add.collider(this.player, this.enemy);
@@ -230,6 +272,11 @@ export default class PlayScene extends Phaser.Scene {
 
   playerShootAttack() {
     this.player.handleShoot();
+  }
+
+  createMousePointerManager() {
+    const pointer = new MousePointerManager(this);
+    return pointer;
   }
 
   // createScore(x, y) {

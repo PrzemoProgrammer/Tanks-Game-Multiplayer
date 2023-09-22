@@ -7,7 +7,7 @@ export default class TankHealthBar extends Phaser.GameObjects.Container {
     this.scene = scene;
     this.config = config;
     scene.add.existing(this);
-
+    this.offsetY = this.config.offsetY;
     this.maxHealth = this.config.max;
     this.health = this.maxHealth;
 
@@ -33,7 +33,14 @@ export default class TankHealthBar extends Phaser.GameObjects.Container {
   }
 
   updateBar() {
-    this.bar.displayWidth = this.getHealthBarWidth();
+    this.scene.tweens.add({
+      targets: this.bar,
+      ease: "Power2",
+      displayWidth: this.getHealthBarWidth(),
+      duration: 200,
+    });
+
+    // this.bar.displayWidth = this.getHealthBarWidth();
   }
 
   getHealthBarWidth() {
@@ -51,5 +58,9 @@ export default class TankHealthBar extends Phaser.GameObjects.Container {
 
   getHealthPercent() {
     return this.health / this.maxHealth;
+  }
+
+  getOffsetY() {
+    return this.offsetY;
   }
 }
