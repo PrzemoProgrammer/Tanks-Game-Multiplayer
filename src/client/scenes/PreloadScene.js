@@ -1,16 +1,30 @@
+import { ASSETS_CONFIG } from "../gameConfig";
+import createAnim from "../helper/createAnim";
+import { botSoldierAnimsData } from "../assets/images/soldiers/animsData";
+import { botHelicopterAnimsData } from "../assets/images/vehicles/airUnits/helicopter/animsData";
+import { botTankAnimsData } from "../assets/images/vehicles/landUnits/tanks/animsData";
+import { explosionAnimsData } from "../assets/images/effects/explosion/animsData";
+import { shootFireAnimsData } from "../assets/images/effects/shootFire/animsData";
+import { shootImpactAnimsData } from "../assets/images/effects/shootImpact/animsData";
+import { playerTankTrackAnimsData } from "../assets/images/player/track/animsData";
+import loadSpriteSheetsData from "../assets/images/loadSprtiesheetsData.json";
+
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super("PreloadScene");
+
+    this.imagePath = ASSETS_CONFIG.images.path;
+    this.imageExtension = ASSETS_CONFIG.images.extension;
+    this.audioPath = ASSETS_CONFIG.audio.path;
+    this.audioExtension = ASSETS_CONFIG.audio.extension;
   }
 
   preload() {
-    this.load.on("complete", () => {
-      this.startPlayScene();
-    });
+    this.loadOnCompleteCallback();
 
     this.loadImages();
     this.loadTankElements();
-    this.loadSpriteSheets();
+    this.loadAllSpriteSheets();
     this.loadMaps();
     this.loadMapsJSON();
     //   this.load.audio("bazookaShoot", "audio/bazookaShoot.mp3");
@@ -40,130 +54,134 @@ export default class PreloadScene extends Phaser.Scene {
     //   frameRate: 15,
     //   repeat: 0,
     // });
+    this.createPlayerTankTrackAnims();
+    this.createShootImpactAnims();
+    this.createShootFireAnims();
+    this.createExplosionEffectAims();
+    this.createBotSoldierAnims();
+    this.createBotHelicopterAnims();
+    this.createBotTankAnims();
+  }
+  createPlayerTankTrackAnims() {
+    this.createAnims(playerTankTrackAnimsData);
+  }
 
-    const shootAnimSpriteCount = 1;
-    for (let i = 0; i < shootAnimSpriteCount; i++) {
-      this.anims.create({
-        key: `shoot-sprite-${i}`,
-        frames: this.anims.generateFrameNumbers(`shoot-sprite-${i}`, {
-          start: 0,
-          end: 3,
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
+  createShootImpactAnims() {
+    this.createAnims(shootImpactAnimsData);
+  }
 
-      this.anims.create({
-        key: `shoot-impact-sprite-${i}`,
-        frames: this.anims.generateFrameNumbers(`shoot-impact-sprite-${i}`, {
-          start: 0,
-          end: 3,
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
+  createShootFireAnims() {
+    this.createAnims(shootFireAnimsData);
+  }
 
-      this.anims.create({
-        key: `object-destroy-sprite-${i}`,
-        frames: this.anims.generateFrameNumbers(`object-destroy-sprite-${i}`, {
-          start: 0,
-          end: 8,
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
+  createExplosionEffectAims() {
+    this.createAnims(explosionAnimsData);
+  }
 
-      this.anims.create({
-        key: `helicopter-idle`,
-        frames: this.anims.generateFrameNumbers(`helicopter-sprite`, {
-          frames: [0],
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
+  createBotTankAnims() {
+    this.createAnims(botTankAnimsData);
+  }
 
-      this.anims.create({
-        key: `helicopter-crash`,
-        frames: this.anims.generateFrameNumbers(`helicopter-sprite`, {
-          frames: [1],
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
+  createBotHelicopterAnims() {
+    this.createAnims(botHelicopterAnimsData);
+  }
 
-      this.anims.create({
-        key: `helicopter-propeller-anim`,
-        frames: this.anims.generateFrameNumbers(`helicopter-sprite`, {
-          frames: [2, 3],
-        }),
-        frameRate: 15,
-        repeat: -1,
-      });
-    }
+  createBotSoldierAnims() {
+    this.createAnims(botSoldierAnimsData);
+  }
 
-    const trackAnimSpriteCount = 2;
-    for (let i = 0; i < trackAnimSpriteCount; i++) {
-      this.anims.create({
-        key: `track-${i}-sprite`,
-        frames: this.anims.generateFrameNumbers(`track-${i}-sprite`, {
-          start: 0,
-          end: 1,
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
+  createAnims({ count, anims }) {
+    for (let i = 0; i < count; i++) {
+      const animsData = anims(i);
 
-      this.anims.create({
-        key: `soldier-move-${i}`,
-        frames: this.anims.generateFrameNumbers(
-          `soldier-move-spritesheet-${i}`,
-          {
-            start: 0,
-            end: 6,
-          }
-        ),
-        frameRate: 15,
-        repeat: 0,
-      });
-
-      this.anims.create({
-        key: `soldier-move-idle-${i}`,
-        frames: this.anims.generateFrameNumbers(
-          `soldier-move-spritesheet-${i}`,
-          {
-            start: 2,
-            end: 2,
-          }
-        ),
-        frameRate: 15,
-        repeat: 0,
-      });
-
-      this.anims.create({
-        key: `soldier-shoot-${i}`,
-        frames: this.anims.generateFrameNumbers(`soldier-spritesheet-${i}`, {
-          frames: [4, 5, 6, 7],
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
-
-      this.anims.create({
-        key: `soldier-dead-${i}`,
-        frames: this.anims.generateFrameNumbers(`soldier-spritesheet-${i}`, {
-          frames: [8, 9, 10, 11],
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
-
-      this.anims.create({
-        key: `soldier-idle-${i}`,
-        frames: [{ key: `soldier-spritesheet-${i}`, frame: 0 }],
-        frameRate: 20,
-      });
+      for (let animData in animsData) {
+        createAnim(this, animsData[animData]);
+      }
     }
   }
+
+  loadAllSpriteSheets() {
+    for (let loadSpriteSheetData in loadSpriteSheetsData) {
+      const spriteSheetData = loadSpriteSheetsData[loadSpriteSheetData];
+      this.loadSpriteSheets(spriteSheetData);
+    }
+  }
+
+  loadSetPath(path) {
+    this.load.setPath(path);
+  }
+
+  loadSpriteSheets({
+    path,
+    key,
+    count,
+    frameWidth,
+    frameHeight,
+    columns,
+    rows,
+  }) {
+    this.loadSetPath(this.imagePath + path);
+
+    for (let i = 0; i < count; i++) {
+      const imageKey = key + i;
+      const imageName = key + i + this.imageExtension;
+      const imageFrameWidth = frameWidth / columns;
+      const imageFrameHeight = frameHeight / rows;
+      this.loadSpriteSheet(
+        imageKey,
+        imageName,
+        imageFrameWidth,
+        imageFrameHeight
+      );
+    }
+  }
+
+  loadSpriteSheet(key, name, frameWidth, frameHeight) {
+    this.load.spritesheet(key, name, {
+      frameWidth: frameWidth,
+      frameHeight: frameHeight,
+    });
+  }
+
+  //! //////////////////////////////////////////////////////////////////////////////////////////////
+  // loadImage({key, name, count}) {
+  //   this.loadSetPath(this.imagePath + path);
+
+  //   for (let i = 0; i < count; i++) {
+  //     this.load.image(key + i, key + i + this.imageExtension);
+  //   }
+  // }
+
+  // loadImages() {
+  //   for (let loadImageData in loadImagesData) {
+  //     const imageData = loadImagesData[loadImageData];
+  //     this.loadImage(imageData);
+  //   }
+
+  //   this.images = [
+  //     "bg",
+  //     "bullet",
+  //     "laser",
+  //     "enemy-bullet",
+  //     "tank-healthbar",
+  //     "health-bar",
+  //     "energy-bar",
+  //     "unitBar-container",
+  //     "health-icon",
+  //     "energy-icon",
+  //     "tank-health-bar-container",
+  //     "tank-ammo-bar-container",
+  //     "ammo-count-image",
+  //     "rocket-bullet",
+  //     "mouse-pointer-viewfinder",
+  //     "hurt-screen",
+  //   ];
+  //   this.images.forEach((img) => {
+  //     this.load.image(img, `${img}.png`);
+  //   });
+  // }
+
+  //! //////////////////////////////////////////////////////////////////////////////////////////////
 
   loadImages() {
     this.load.setPath("./src/client/assets/images");
@@ -214,95 +232,10 @@ export default class PreloadScene extends Phaser.Scene {
     }
   }
 
-  loadSpriteSheets() {
-    for (let i = 0; i < 1; i++) {
-      this.loadShootAnimSprite(i);
-      this.loadShootImpactSprite(i);
-      this.loadObjectDestroySprite(i);
-      this.loadHelicopterSprite();
-    }
-
-    for (let i = 0; i < 2; i++) {
-      this.loadTankTracksSprite(i);
-      this.loadSoldierLegsMoveSprite(i);
-      this.loadSoldiersSprite(i);
-    }
-  }
-
-  loadHelicopterSprite() {
-    this.load.setPath(
-      "./src/client/assets/images/vehicles/airUnits/helicopter"
-    );
-
-    this.load.spritesheet(`helicopter-sprite`, `helicopter-sprite.png`, {
-      frameWidth: 1058 / 2,
-      frameHeight: 1058 / 2,
+  loadOnCompleteCallback() {
+    this.load.on("complete", () => {
+      this.startPlayScene();
     });
-  }
-
-  loadShootAnimSprite(i) {
-    this.load.setPath("./src/client/assets/images");
-    this.load.spritesheet(`shoot-sprite-${i}`, `shoot-sprite-${i}.png`, {
-      frameWidth: 848 / 4,
-      frameHeight: 212,
-    });
-  }
-
-  loadShootImpactSprite(i) {
-    this.load.setPath("./src/client/assets/images");
-    this.load.spritesheet(
-      `shoot-impact-sprite-${i}`,
-      `shoot-impact-sprite-${i}.png`,
-      {
-        frameWidth: 568 / 4,
-        frameHeight: 142,
-      }
-    );
-  }
-
-  loadObjectDestroySprite(i) {
-    this.load.setPath("./src/client/assets/images");
-    this.load.spritesheet(
-      `object-destroy-sprite-${i}`,
-      `object-destroy-sprite-${i}.png`,
-      {
-        frameWidth: 1743 / 9,
-        frameHeight: 194,
-      }
-    );
-  }
-
-  loadTankTracksSprite(i) {
-    this.load.setPath("./src/client/assets/images");
-    this.load.spritesheet(`track-${i}-sprite`, `track-${i}-sprite.png`, {
-      frameWidth: 54 / 2,
-      frameHeight: 158,
-    });
-  }
-
-  loadSoldiersSprite(i) {
-    this.load.setPath("./src/client/assets/images/soldiers");
-    this.load.spritesheet(
-      `soldier-spritesheet-${i}`,
-      `soldier-spritesheet-${i}.png`,
-      {
-        frameWidth: 853 / 4,
-        frameHeight: 639 / 3,
-      }
-    );
-  }
-
-  loadSoldierLegsMoveSprite(i) {
-    this.load.setPath("./src/client/assets/images/soldiers");
-
-    this.load.spritesheet(
-      `soldier-move-spritesheet-${i}`,
-      `soldier-move-spritesheet-${i}.png`,
-      {
-        frameWidth: 1471 / 7,
-        frameHeight: 210,
-      }
-    );
   }
 
   // loadAudio() {

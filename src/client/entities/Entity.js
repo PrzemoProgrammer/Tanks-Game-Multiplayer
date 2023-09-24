@@ -251,7 +251,7 @@ export default class Entity extends Phaser.GameObjects.Container {
   manageCondition(damage) {
     this.getDamage(damage);
     if (!this.haveNoHealth()) return;
-    this.destroyVehicle();
+    this.destroyObject();
   }
 
   playDestroyAnim() {
@@ -262,7 +262,7 @@ export default class Entity extends Phaser.GameObjects.Container {
     this.tankBars.healthBar.getDamage(damage);
   }
 
-  destroyVehicle() {
+  destroyObject() {
     this.disablePhysicsBody();
     this.setIsAlive(false);
     // this.shootingAbility.setCanAttack(false)

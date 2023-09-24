@@ -2,11 +2,20 @@ import ShotManager from "../combat/Shooting";
 import TankHealthBar from "../components/TankHealthBar";
 import playDelayCallback from "../helper/playDelayCallback";
 import collisionHandler from "../helper/collisionHandler";
+import AnimationManager from "../utils/AnimationManager";
 
 export default class Bot extends Phaser.GameObjects.Container {
   constructor(scene, config) {
-    const x = config.x;
-    const y = config.y;
+    const {
+      x,
+      y,
+      spriteID,
+      moveSpeed,
+      shootDelay,
+      turnForce,
+      bullet: { damage },
+      startAttackRange,
+    } = config;
 
     super(scene, x, y);
     this.scene = scene;
@@ -14,19 +23,22 @@ export default class Bot extends Phaser.GameObjects.Container {
     this.y = y;
     this.config = config;
     this.scene.add.existing(this);
-    this.spriteID = this.config.spriteID;
-    this.moveSpeed = this.config.moveSpeed;
-    this.shootDelay = this.config.shootDelay;
-    this.turnForce = this.config.turnForce;
-    this.bulletDamage = this.config.bullet.damage;
+    this.spriteID = spriteID;
+    this.moveSpeed = moveSpeed;
+    this.shootDelay = shootDelay;
+    this.turnForce = turnForce;
+    this.bulletDamage = damage;
+    this.startAttackRange = startAttackRange;
+    this.startAttackRange = this.config.startAttackRange;
     this.canAttack = true;
     this.isAlive = true;
 
-    this.topSprite = this.createTop(0, 0);
-    this.downSprite = this.createDown(0, 0);
+    this.topSprite = this.createTop();
+    this.downSprite = this.createDown();
     this.healthBar = this.createHealthBar();
+    this.destroyAnim = this.createDestroyAnim();
 
-    this.add([this.downSprite, this.topSprite]);
+    this.add([this.downSprite, this.topSprite, this.destroyAnim]);
 
     this.addPhysics();
     this.shootingAbility = this.createShootingAbility();
@@ -46,16 +58,16 @@ export default class Bot extends Phaser.GameObjects.Container {
     // this.moveRight();
   }
 
-  createTop(x, y) {
+  createTop() {
     const sprite = this.config.spriteStructure.top;
-    const body = this.scene.add.sprite(x, y, sprite).setOrigin(0.5, 0.5);
+    const body = this.scene.add.sprite(0, 0, sprite).setOrigin(0.5, 0.5);
 
     return body;
   }
 
-  createDown(x, y) {
+  createDown() {
     const sprite = this.config.spriteStructure.down;
-    const legs = this.scene.add.sprite(x, y, sprite).setOrigin(0.5, 0.5);
+    const legs = this.scene.add.sprite(0, 0, sprite).setOrigin(0.5, 0.5);
 
     return legs;
   }
@@ -71,6 +83,13 @@ export default class Bot extends Phaser.GameObjects.Container {
     const healthbar = new TankHealthBar(this.scene, config).setScale(0.7);
 
     return healthbar;
+  }
+
+  createDestroyAnim() {
+    const config = this.config.explosionAnim;
+    const anim = new AnimationManager(this.scene, config);
+
+    return anim;
   }
 
   addPhysics() {
@@ -104,13 +123,15 @@ export default class Bot extends Phaser.GameObjects.Container {
   }
 
   playIdleAnims() {
-    const { idle, legsIdle } = this.config.anims;
-    this.topSprite.play(idle, true);
-    this.downSprite.play(legsIdle, true);
+    const { top, down } = this.config.anims;
+    const topIdle = top.idle;
+    const downIdle = down.idle;
+    this.topSprite.play(topIdle, true);
+    this.downSprite.play(downIdle, true);
   }
 
   playShootAnim(callback) {
-    const shootAnim = this.config.anims.shoot;
+    const shootAnim = this.config.anims.top.attack;
     this.topSprite.play(shootAnim, true).once("animationcomplete", () => {
       if (!callback) return;
       callback();
@@ -118,7 +139,7 @@ export default class Bot extends Phaser.GameObjects.Container {
   }
 
   playMoveAnim() {
-    const animKey = this.config.anims.move;
+    const animKey = this.config.anims.down.move;
     this.downSprite.play(animKey, true);
   }
 
@@ -152,7 +173,7 @@ export default class Bot extends Phaser.GameObjects.Container {
   }
 
   playDeadAnim(callback) {
-    const animKey = this.config.anims.dead;
+    const animKey = this.config.anims.top.dead;
     this.topSprite.play(animKey, true);
     if (!callback) return;
     callback();
@@ -239,6 +260,7 @@ export default class Bot extends Phaser.GameObjects.Container {
     this.setIsAlive(false);
     this.healthBar.setVisible(false);
     this.stopAnims();
+    this.playDestroyAnim();
     this.playDeadAnim(() => {
       this.makeInvisibleWithDelay(this.config.deadInvisibleDelayTime);
     });
@@ -256,10 +278,14 @@ export default class Bot extends Phaser.GameObjects.Container {
     return this.shootingAbility.getActiveBullets();
   }
 
+  getUpdatedRotation() {
+    return this.rotation + Phaser.Math.DEG_TO_RAD * 180;
+  }
+
   shoot() {
+    const rotation = this.getUpdatedRotation();
     this.shootingAbility.disableAttackForTime(this.shootDelay);
-    this.rotation += Phaser.Math.DEG_TO_RAD * 180;
-    this.shootingAbility.shootBulletFrom(this.x, this.y, this.rotation);
+    this.shootingAbility.shootBulletFrom(this.x, this.y, rotation);
   }
 
   turnOffBullet(bullet) {
@@ -282,7 +308,11 @@ export default class Bot extends Phaser.GameObjects.Container {
 
   isInAttackRange(x, y) {
     const target = { x, y };
-    const offset = 500;
+    const offset = this.startAttackRange;
     return !collisionHandler(target, this, offset);
+  }
+
+  playDestroyAnim() {
+    this.destroyAnim.playAnim();
   }
 }

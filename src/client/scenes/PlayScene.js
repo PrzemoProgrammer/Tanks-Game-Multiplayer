@@ -3,18 +3,19 @@ import {
   GAME_HEIGHT,
   PLAYER_CONFIG,
   ENEMY_CONFIG,
-  GUN_SOLDIER_CONFIG,
-  BAZOOKA_SOLDIER_CONFIG,
-  HELICOPTER_CONFIG,
-  MOUSE_POINTER_CONFIG,
+  BOT_GUN_SOLDIER_CONFIG,
+  BOT_BAZOOKA_SOLDIER_CONFIG,
+  BOT_HELICOPTER_CONFIG,
+  BOT_TANK_CONFIG,
 } from "../gameConfig";
 import HandleInputs from "../utils/HandleInputs";
 import MouseControl from "../utils/MouseControl";
 import MousePointerManager from "../utils/MousePointerManager";
 import Player from "../entities/Player";
 import Enemy from "../entities/Enemy";
-import Soldier from "../entities/Soldier";
-import Helicopter from "../entities/Helicopter";
+import SoldierBot from "../entities/Soldier";
+import HelicopterBot from "../entities/Helicopter";
+import TankBot from "../entities/Tank";
 import checkCollisionWithObject from "../helper/collisionHandler";
 import setCollision from "../helper/phaserCollision";
 
@@ -36,9 +37,10 @@ export default class PlayScene extends Phaser.Scene {
     // this.background = this.createBackground();
     this.tilemapLayers = this.createTilemap();
     this.player = this.createPlayer();
-    this.enemy = this.createEnemy();
-    this.soldier = this.createSoldier();
-    this.helicopter = this.createHelicopter();
+    // this.enemy = this.createEnemy();
+    this.botSoldier = this.createBotSoldier();
+    this.botHelicopter = this.createBotHelicopter();
+    this.botTank = this.createBotTank();
 
     this.addPlayerCollisions();
     this.setupCamera();
@@ -133,22 +135,31 @@ export default class PlayScene extends Phaser.Scene {
     return enemy;
   }
 
-  createSoldier() {
-    const config = BAZOOKA_SOLDIER_CONFIG; // BAZOOKA_SOLDIER_CONFIG  GUN_SOLDIER_CONFIG
-    const soldier = new Soldier(this, config);
-    this.addEnemyCollisions(soldier);
-    this.enemies.push(soldier);
+  createBotSoldier() {
+    const config = BOT_BAZOOKA_SOLDIER_CONFIG; // BOT_BAZOOKA_SOLDIER_CONFIG  BOT_GUN_SOLDIER_CONFIG
+    const botSoldier = new SoldierBot(this, config);
+    this.addEnemyCollisions(botSoldier);
+    this.enemies.push(botSoldier);
 
-    return soldier;
+    return botSoldier;
   }
 
-  createHelicopter() {
-    const config = HELICOPTER_CONFIG;
-    const helicopter = new Helicopter(this, config);
-    this.addEnemyCollisions(helicopter);
-    this.enemies.push(helicopter);
+  createBotHelicopter() {
+    const config = BOT_HELICOPTER_CONFIG;
+    const botHelicopter = new HelicopterBot(this, config);
+    this.addEnemyCollisions(botHelicopter);
+    this.enemies.push(botHelicopter);
 
-    return helicopter;
+    return botHelicopter;
+  }
+
+  createBotTank() {
+    const config = BOT_TANK_CONFIG;
+    const botTank = new TankBot(this, config);
+    this.addEnemyCollisions(botTank);
+    this.enemies.push(botTank);
+
+    return botTank;
   }
 
   addPlayerCollisions() {

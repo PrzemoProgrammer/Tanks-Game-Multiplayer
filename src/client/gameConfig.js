@@ -5,6 +5,17 @@ export const END_ENEMY_X_RESPAWN = GAME_HEIGHT - START_ENEMY_X_RESPAWN;
 export const ENEMY_Y_RESPAWN = -200;
 export const ENEMY_Y_LIMIT = GAME_HEIGHT + 100;
 
+export const ASSETS_CONFIG = {
+  images: {
+    path: "./src/client/assets/images/",
+    extension: ".png",
+  },
+  audio: {
+    path: "./src/client/assets/audio/",
+    extension: ".mp3",
+  },
+};
+
 export const TANK_SPRITE_STRUCTURE = {
   body: (id) => `tank-${id}`,
   gun: (id) => `tank-${id}-gun`,
@@ -19,7 +30,73 @@ export const MOUSE_POINTER_CONFIG = {
   offDefaultPointer: true,
 };
 
-export const HELICOPTER_CONFIG = {
+export const BOT_TANK_CONFIG = {
+  x: GAME_WIDTH / 2,
+  y: GAME_HEIGHT + 250,
+  spriteID: 0,
+  moveSpeed: 200,
+  turnForce: 1,
+  shootDelay: 1000,
+  deadInvisibleDelayTime: 3000,
+  startAttackRange: 500,
+  spriteStructure: {
+    top: `tank-sprite-0`,
+    down: `tank-sprite-0`,
+  },
+  anims: {
+    top: {
+      idle: "tank-gun-idle-anim-0",
+      attack: "tank-gun-attack-anim-0",
+      dead: "tank-crash-anim-0",
+    },
+    down: {
+      idle: "tank-body-idle-anim-0",
+      move: "tank-move-anim-0",
+    },
+  },
+  body: {
+    radius: 55,
+    offsetX: -55,
+    offsetY: -50,
+  },
+  bullet: {
+    damage: 10,
+    attackRange: 600,
+    sprite: "enemy-bullet",
+    speed: 700,
+    offset: 130,
+    startCount: 15,
+    body: {
+      width: 12,
+      height: 12,
+      offsetX: 30,
+      offsetY: 30,
+    },
+    impactAnim: {
+      x: 0,
+      y: 0,
+      sprite: "shoot-impact-sprite-0",
+      offset: 30,
+      visibleAtStart: false,
+    },
+  },
+  health: {
+    image: "tank-healthbar",
+    containerImage: "tank-health-bar-container",
+    max: 100,
+    offsetX: 0,
+    offsetY: -50,
+  },
+  explosionAnim: {
+    x: 0,
+    y: 0,
+    sprite: "object-destroy-sprite-0",
+    visibleAtStart: false,
+    offset: 0,
+  },
+};
+
+export const BOT_HELICOPTER_CONFIG = {
   x: GAME_WIDTH / 2 - 600,
   y: GAME_HEIGHT + 100,
   spriteID: 0,
@@ -27,16 +104,21 @@ export const HELICOPTER_CONFIG = {
   turnForce: 1,
   shootDelay: 1000,
   deadInvisibleDelayTime: 3000,
+  startAttackRange: 500,
   spriteStructure: {
-    top: `helicopter-sprite`,
-    down: `helicopter-sprite`,
+    top: `helicopter-sprite-0`,
+    down: `helicopter-sprite-0`,
   },
   anims: {
-    move: "helicopter-idle",
-    shoot: "helicopter-propeller-anim",
-    dead: "helicopter-crash",
-    idle: "helicopter-propeller-anim",
-    legsIdle: "helicopter-idle",
+    top: {
+      idle: "helicopter-propeller-anim",
+      attack: "helicopter-propeller-anim",
+      dead: "helicopter-crash",
+    },
+    down: {
+      idle: "helicopter-idle",
+      move: "helicopter-idle",
+    },
   },
   body: {
     radius: 45,
@@ -80,7 +162,7 @@ export const HELICOPTER_CONFIG = {
   },
 };
 
-export const GUN_SOLDIER_CONFIG = {
+export const BOT_GUN_SOLDIER_CONFIG = {
   x: GAME_WIDTH / 2 + 200,
   y: GAME_HEIGHT - 60,
   spriteID: 0,
@@ -88,16 +170,21 @@ export const GUN_SOLDIER_CONFIG = {
   turnForce: 1,
   shootDelay: 1000,
   deadInvisibleDelayTime: 3000,
+  startAttackRange: 500,
   spriteStructure: {
     top: `soldier-spritesheet-0`,
     down: `soldier-move-spritesheet-0`,
   },
   anims: {
-    move: "soldier-move-0",
-    shoot: "soldier-shoot-0",
-    dead: "soldier-dead-0",
-    idle: "soldier-idle-0",
-    legsIdle: "soldier-move-idle-0",
+    top: {
+      idle: "soldier-idle-0",
+      attack: "soldier-shoot-0",
+      dead: "soldier-dead-0",
+    },
+    down: {
+      idle: "soldier-move-idle-0",
+      move: "soldier-move-0",
+    },
   },
   body: {
     radius: 20,
@@ -132,9 +219,16 @@ export const GUN_SOLDIER_CONFIG = {
     offsetX: 0,
     offsetY: -50,
   },
+  explosionAnim: {
+    x: 0,
+    y: 0,
+    sprite: "object-destroy-sprite-1",
+    visibleAtStart: false,
+    offset: 0,
+  },
 };
 
-export const BAZOOKA_SOLDIER_CONFIG = {
+export const BOT_BAZOOKA_SOLDIER_CONFIG = {
   x: GAME_WIDTH / 2 + 200,
   y: GAME_HEIGHT - 60,
   spriteID: 1,
@@ -142,16 +236,21 @@ export const BAZOOKA_SOLDIER_CONFIG = {
   turnForce: 1,
   shootDelay: 1000,
   deadInvisibleDelayTime: 3000,
+  startAttackRange: 500,
   spriteStructure: {
     top: `soldier-spritesheet-1`,
     down: `soldier-move-spritesheet-1`,
   },
   anims: {
-    move: "soldier-move-1",
-    shoot: "soldier-shoot-1",
-    dead: "soldier-dead-1",
-    idle: "soldier-idle-1",
-    legsIdle: "soldier-move-idle-1",
+    top: {
+      idle: "soldier-idle-1",
+      attack: "soldier-shoot-1",
+      dead: "soldier-dead-1",
+    },
+    down: {
+      idle: "soldier-move-idle-1",
+      move: "soldier-move-1",
+    },
   },
   body: {
     radius: 20,
@@ -185,6 +284,13 @@ export const BAZOOKA_SOLDIER_CONFIG = {
     max: 100,
     offsetX: 0,
     offsetY: -50,
+  },
+  explosionAnim: {
+    x: 0,
+    y: 0,
+    sprite: "object-destroy-sprite-1",
+    visibleAtStart: false,
+    offset: 0,
   },
 };
 
@@ -282,7 +388,7 @@ export const PLAYER_CONFIG = {
   trackAnim: {
     x: 40,
     y: 0,
-    sprite: "track-0-sprite",
+    sprite: "track-sprite-0",
     visibleAtStart: true,
   },
 };
@@ -395,7 +501,7 @@ export const ENEMY_CONFIG = {
   trackAnim: {
     x: 40,
     y: 0,
-    sprite: "track-1-sprite",
+    sprite: "track-sprite-1",
     visibleAtStart: true,
   },
 };

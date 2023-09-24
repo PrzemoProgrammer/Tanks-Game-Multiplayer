@@ -1,20 +1,18 @@
 import Bot from "./Bot";
-import AnimationManager from "../utils/AnimationManager";
+// import AnimationManager from "../utils/AnimationManager";
 
 export default class Helicopter extends Bot {
   constructor(scene, config) {
     super(scene, config);
     this.scene = scene;
 
-    this.destroyAnim = this.createDestroyAnim();
-    this.add([this.destroyAnim]);
-
+    this.setupDestroyAnim();
     //! /////////////////////////////////
-    this.scene.time.addEvent({
-      delay: 100,
-      callback: () => this.handleShoot(),
-      loop: true,
-    });
+    // this.scene.time.addEvent({
+    //   delay: 100,
+    //   callback: () => this.handleShoot(),
+    //   loop: true,
+    // });
     //! /////////////////////////////////
   }
 
@@ -24,22 +22,15 @@ export default class Helicopter extends Bot {
     // this.moveRight();
   }
 
-  createDestroyAnim() {
-    const config = this.config.explosionAnim;
-    const anim = new AnimationManager(this.scene, config).setScale(1.7);
-
-    return anim;
-  }
-
-  playDestroyAnim() {
-    this.destroyAnim.playAnim();
+  setupDestroyAnim() {
+    this.destroyAnim.setScale(1.7);
   }
 
   startSmallerSizeAnim(callback) {
     this.scene.tweens.add({
       targets: this,
       ease: "Circ.in",
-      scale: 0.5,
+      scale: 0.6,
       duration: 1500,
       onComplete: () => {
         callback();
@@ -59,5 +50,12 @@ export default class Helicopter extends Bot {
       this.playDestroyAnim();
       this.stopAnims();
     });
+  }
+
+  handleShoot(x, y) {
+    if (!this.isAlive) return;
+    if (!this.isInAttackRange(x, y)) return;
+    if (!this.canShootAttack()) return;
+    this.shoot();
   }
 }

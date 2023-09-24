@@ -47,7 +47,7 @@ export default class HudScene extends Phaser.Scene {
   }
 
   startHurtScreenAnim() {
-    this.hurtScreen.startAnim();
+    this.hurtScreen.handleStartAnim();
   }
 
   handlePlayerStatus(value) {

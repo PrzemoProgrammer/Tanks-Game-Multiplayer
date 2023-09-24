@@ -10,6 +10,9 @@
 - crashed ground anim after destroy tank 
 - make loading screen
 - add new collide layer to tilemap
+- refactor and make better readable preload assets
+- soldier dead animation
+- połączyć animację gąsienic czołgu
 
 
 
