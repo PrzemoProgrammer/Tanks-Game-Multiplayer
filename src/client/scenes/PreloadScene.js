@@ -1,101 +1,52 @@
 import { ASSETS_CONFIG } from "../gameConfig";
 import createAnim from "../helper/createAnim";
-import { botSoldierAnimsData } from "../assets/images/soldiers/animsData";
-import { botHelicopterAnimsData } from "../assets/images/vehicles/airUnits/helicopter/animsData";
-import { botTankAnimsData } from "../assets/images/vehicles/landUnits/tanks/animsData";
-import { explosionAnimsData } from "../assets/images/effects/explosion/animsData";
-import { shootFireAnimsData } from "../assets/images/effects/shootFire/animsData";
-import { shootImpactAnimsData } from "../assets/images/effects/shootImpact/animsData";
-import { playerTankTrackAnimsData } from "../assets/images/player/track/animsData";
 import loadSpriteSheetsData from "../assets/images/loadSprtiesheetsData.json";
+import loadImagesData from "../assets/images/loadImagesData.json";
+import loadTilemapsData from "../assets/images/loadTilemapsData.json";
+import createAnimsDataIndex from "../assets/images/createAnimsIndex";
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super("PreloadScene");
+    const { images, audio } = ASSETS_CONFIG;
 
-    this.imagePath = ASSETS_CONFIG.images.path;
-    this.imageExtension = ASSETS_CONFIG.images.extension;
-    this.audioPath = ASSETS_CONFIG.audio.path;
-    this.audioExtension = ASSETS_CONFIG.audio.extension;
+    this.imagePath = images.path;
+    this.imageExtension = images.extension;
+    this.audioPath = audio.path;
+    this.audioExtension = audio.extension;
   }
 
   preload() {
     this.loadOnCompleteCallback();
 
-    this.loadImages();
-    this.loadTankElements();
+    this.loadAllImages();
     this.loadAllSpriteSheets();
-    this.loadMaps();
-    this.loadMapsJSON();
+    this.loadTilemapsJSON();
     //   this.load.audio("bazookaShoot", "audio/bazookaShoot.mp3");
   }
 
   create() {
-    this.addAnims();
+    this.createAllAnims();
   }
 
-  addAnims() {
-    // for (let i = 1; i <= 5; i++) {
-    //   this.anims.create({
-    //     key: `skin${i}-idle`,
-    //     frames: `skin${i}Idle`,
-    //     frameRate: 15,
-    //     repeat: -1,
-    //   });
-    // }
-    //? ///////////// albo ///////////////////////
-
-    // this.anims.create({
-    //   key: `shoot-sprite-0`,
-    //   frames: this.anims.generateFrameNumbers(`shoot-sprite-0`, {
-    //     start: 0,
-    //     end: 3,
-    //   }),
-    //   frameRate: 15,
-    //   repeat: 0,
-    // });
-    this.createPlayerTankTrackAnims();
-    this.createShootImpactAnims();
-    this.createShootFireAnims();
-    this.createExplosionEffectAims();
-    this.createBotSoldierAnims();
-    this.createBotHelicopterAnims();
-    this.createBotTankAnims();
-  }
-  createPlayerTankTrackAnims() {
-    this.createAnims(playerTankTrackAnimsData);
+  createAllAnims() {
+    for (const createAnimsData of createAnimsDataIndex) {
+      this.createAnims(createAnimsData);
+    }
   }
 
-  createShootImpactAnims() {
-    this.createAnims(shootImpactAnimsData);
-  }
-
-  createShootFireAnims() {
-    this.createAnims(shootFireAnimsData);
-  }
-
-  createExplosionEffectAims() {
-    this.createAnims(explosionAnimsData);
-  }
-
-  createBotTankAnims() {
-    this.createAnims(botTankAnimsData);
-  }
-
-  createBotHelicopterAnims() {
-    this.createAnims(botHelicopterAnimsData);
-  }
-
-  createBotSoldierAnims() {
-    this.createAnims(botSoldierAnimsData);
-  }
-
-  createAnims({ count, anims }) {
+  createAnims({ anims, count }) {
     for (let i = 0; i < count; i++) {
-      const animsData = anims(i);
+      for (let animData in anims) {
+        const data = anims[animData];
 
-      for (let animData in animsData) {
-        createAnim(this, animsData[animData]);
+        const modifiedData = {
+          ...anims[animData],
+          key: data.key + i,
+          sprite: data.sprite + i,
+        };
+
+        createAnim(this, modifiedData);
       }
     }
   }
@@ -143,92 +94,38 @@ export default class PreloadScene extends Phaser.Scene {
     });
   }
 
-  //! //////////////////////////////////////////////////////////////////////////////////////////////
-  // loadImage({key, name, count}) {
-  //   this.loadSetPath(this.imagePath + path);
-
-  //   for (let i = 0; i < count; i++) {
-  //     this.load.image(key + i, key + i + this.imageExtension);
-  //   }
-  // }
-
-  // loadImages() {
-  //   for (let loadImageData in loadImagesData) {
-  //     const imageData = loadImagesData[loadImageData];
-  //     this.loadImage(imageData);
-  //   }
-
-  //   this.images = [
-  //     "bg",
-  //     "bullet",
-  //     "laser",
-  //     "enemy-bullet",
-  //     "tank-healthbar",
-  //     "health-bar",
-  //     "energy-bar",
-  //     "unitBar-container",
-  //     "health-icon",
-  //     "energy-icon",
-  //     "tank-health-bar-container",
-  //     "tank-ammo-bar-container",
-  //     "ammo-count-image",
-  //     "rocket-bullet",
-  //     "mouse-pointer-viewfinder",
-  //     "hurt-screen",
-  //   ];
-  //   this.images.forEach((img) => {
-  //     this.load.image(img, `${img}.png`);
-  //   });
-  // }
-
-  //! //////////////////////////////////////////////////////////////////////////////////////////////
-
-  loadImages() {
-    this.load.setPath("./src/client/assets/images");
-
-    this.images = [
-      "bg",
-      "bullet",
-      "laser",
-      "enemy-bullet",
-      "tank-healthbar",
-      "health-bar",
-      "energy-bar",
-      "unitBar-container",
-      "health-icon",
-      "energy-icon",
-      "tank-health-bar-container",
-      "tank-ammo-bar-container",
-      "ammo-count-image",
-      "rocket-bullet",
-      "mouse-pointer-viewfinder",
-      "hurt-screen",
-    ];
-    this.images.forEach((img) => {
-      this.load.image(img, `${img}.png`);
-    });
+  loadImage(key) {
+    this.load.image(key, key + this.imageExtension);
   }
 
-  loadMaps() {
-    this.load.setPath("./src/client/assets/images/maps");
+  loadImages({ path, key, count }) {
+    this.loadSetPath(this.imagePath + path);
 
-    this.images = ["battle_map_1"];
-    this.images.forEach((img) => {
-      this.load.image(img, `${img}.png`);
-    });
+    const start = 0;
+    const end = count || 1;
+
+    for (let i = start; i < end; i++) {
+      const imageKey = key + (count ? i : "");
+      this.loadImage(imageKey);
+    }
   }
 
-  loadMapsJSON() {
-    this.load.tilemapTiledJSON("BattleMap_1", "BattleMap_1.json");
+  loadAllImages() {
+    for (let loadImageData in loadImagesData) {
+      const imageData = loadImagesData[loadImageData];
+      this.loadImages(imageData);
+    }
   }
 
-  loadTankElements() {
-    for (let i = 0; i <= 1; i++) {
-      const tankBody = "tank-" + i;
-      const tankGun = "tank-" + i + "-gun";
+  loadTilemapJSON({ path, key, filename }) {
+    this.loadSetPath(this.imagePath + path);
+    this.load.tilemapTiledJSON(key, filename);
+  }
 
-      this.load.image(tankBody, tankBody + ".png");
-      this.load.image(tankGun, tankGun + ".png");
+  loadTilemapsJSON() {
+    for (let loadTilemapData in loadTilemapsData) {
+      const tilemapData = loadTilemapsData[loadTilemapData];
+      this.loadTilemapJSON(tilemapData);
     }
   }
 

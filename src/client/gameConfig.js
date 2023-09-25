@@ -17,13 +17,13 @@ export const ASSETS_CONFIG = {
 };
 
 export const TANK_SPRITE_STRUCTURE = {
-  body: (id) => `tank-${id}`,
-  gun: (id) => `tank-${id}-gun`,
+  body: (id) => `tank-body-${id}`,
+  gun: (id) => `tank-gun-${id}`,
   track: (id) => `track-${id}-sprite`,
 };
 
 export const MOUSE_POINTER_CONFIG = {
-  path: "/src/client/assets/images/",
+  path: "/src/client/assets/images/mousePointers/",
   image: "mouse-pointer-viewfinder",
   imageWidth: "19",
   autoStart: true,
@@ -62,7 +62,7 @@ export const BOT_TANK_CONFIG = {
   bullet: {
     damage: 10,
     attackRange: 600,
-    sprite: "enemy-bullet",
+    sprite: "bullet-1",
     speed: 700,
     offset: 130,
     startCount: 15,
@@ -111,13 +111,13 @@ export const BOT_HELICOPTER_CONFIG = {
   },
   anims: {
     top: {
-      idle: "helicopter-propeller-anim",
-      attack: "helicopter-propeller-anim",
-      dead: "helicopter-crash",
+      idle: "helicopter-propeller-anim-0",
+      attack: "helicopter-propeller-anim-0",
+      dead: "helicopter-crash-0",
     },
     down: {
-      idle: "helicopter-idle",
-      move: "helicopter-idle",
+      idle: "helicopter-idle-0",
+      move: "helicopter-idle-0",
     },
   },
   body: {
@@ -128,7 +128,7 @@ export const BOT_HELICOPTER_CONFIG = {
   bullet: {
     damage: 10,
     attackRange: 600,
-    sprite: "rocket-bullet",
+    sprite: "bullet-2",
     speed: 700,
     offset: 100,
     startCount: 15,
@@ -194,7 +194,7 @@ export const BOT_GUN_SOLDIER_CONFIG = {
   bullet: {
     damage: 10,
     attackRange: 600,
-    sprite: "bullet",
+    sprite: "bullet-0",
     speed: 700,
     offset: 30,
     startCount: 15,
@@ -260,7 +260,7 @@ export const BOT_BAZOOKA_SOLDIER_CONFIG = {
   bullet: {
     damage: 10,
     attackRange: 600,
-    sprite: "rocket-bullet",
+    sprite: "bullet-2",
     speed: 700,
     offset: 30,
     startCount: 15,
@@ -319,7 +319,7 @@ export const PLAYER_CONFIG = {
   bullet: {
     damage: 10,
     attackRange: 600,
-    sprite: "bullet",
+    sprite: "bullet-0",
     speed: 700,
     offset: 60,
     startCount: 15,
@@ -432,7 +432,7 @@ export const ENEMY_CONFIG = {
   bullet: {
     damage: 20,
     attackRange: 900,
-    sprite: "enemy-bullet",
+    sprite: "bullet-1",
     speed: 700,
     offset: 60,
     startCount: 15,

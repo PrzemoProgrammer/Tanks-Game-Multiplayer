@@ -34,7 +34,6 @@ export default class PlayScene extends Phaser.Scene {
     this.enemies = [];
 
     this.hudScene = this.scene.get("HudScene");
-    // this.background = this.createBackground();
     this.tilemapLayers = this.createTilemap();
     this.player = this.createPlayer();
     // this.enemy = this.createEnemy();
@@ -72,14 +71,6 @@ export default class PlayScene extends Phaser.Scene {
 
     return { ground, obstacles };
   }
-
-  // createBackground() {
-  //   const background = this.add
-  //     .image(0, 0, PLAYER_CONFIG.backgroundImage)
-  //     .setOrigin(0, 0);
-
-  //   return background;
-  // }
 
   setWorldBounce(width, height) {
     this.physics.world.setBounds(0, 0, width, height);
