@@ -1,18 +1,22 @@
 import {
-  GAME_WIDTH,
-  GAME_HEIGHT,
-  PLAYER_CONFIG,
-  ENEMY_CONFIG,
+  // GAME_WIDTH,
+  // GAME_HEIGHT,
+  // PLAYER_CONFIG,
+  // ENEMY_CONFIG,
   BOT_GUN_SOLDIER_CONFIG,
   BOT_BAZOOKA_SOLDIER_CONFIG,
   BOT_HELICOPTER_CONFIG,
   BOT_TANK_CONFIG,
 } from "../gameConfig";
+
+import { GAME_WIDTH, GAME_HEIGHT } from "../config/game/gameConfig";
+import playerConfig from "../config/player/playerConfig";
+import botEnemiesConfigIndex from "../config/botEnemies/configsIndex";
 import HandleInputs from "../utils/HandleInputs";
 import MouseControl from "../utils/MouseControl";
 import MousePointerManager from "../utils/MousePointerManager";
 import Player from "../entities/Player";
-import Enemy from "../entities/Enemy";
+// import Enemy from "../entities/Enemy";
 import SoldierBot from "../entities/Soldier";
 import HelicopterBot from "../entities/Helicopter";
 import TankBot from "../entities/Tank";
@@ -46,6 +50,8 @@ export default class PlayScene extends Phaser.Scene {
     this.mouseInput = new MouseControl(this);
     this.handleInputs = new HandleInputs(this);
     this.mousePointer = new MousePointerManager(this);
+
+    this.createEnemies();
   }
 
   update() {
@@ -56,23 +62,83 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   createTilemap() {
-    const tilemapJSONKey = PLAYER_CONFIG.map.tilemap.JSONKey;
-    const tilemapImage = PLAYER_CONFIG.map.tilemap.image;
-    const groundLayer = PLAYER_CONFIG.map.layers.ground;
-    const obstaclesLayer = PLAYER_CONFIG.map.layers.obstacles;
+    const {
+      tilemap: { JSONKey, image },
+      layers: { ground, objects, collision, entities },
+    } = playerConfig.map;
 
-    const tilemap = this.make.tilemap({
-      key: tilemapJSONKey,
-    });
-    const tileset = tilemap.addTilesetImage(tilemapImage);
-    const ground = tilemap.createLayer(groundLayer, tileset);
-    const obstacles = tilemap.createLayer(obstaclesLayer, tileset);
-    obstacles.setCollisionByExclusion([-1]);
+    const tilemap = this.make.tilemap({ key: JSONKey });
+    const tileset = tilemap.addTilesetImage(image);
 
-    return { ground, obstacles };
+    const groundLayer = tilemap.createLayer(ground, tileset);
+    const objectsLayer = tilemap.createLayer(objects, tileset);
+    const entitiesLayer = tilemap.createLayer(entities, tileset);
+    const collisionLayer = tilemap
+      .createLayer(collision, tileset)
+      .setCollisionByExclusion([-1])
+      .setVisible(false);
+
+    return {
+      ground: groundLayer,
+      objects: objectsLayer,
+      entities: entitiesLayer,
+      collision: collisionLayer,
+    };
   }
 
-  setWorldBounce(width, height) {
+  //! /////////////////////////////////////////////////////////////////////////////
+
+  getEntitiesTileIndexes() {
+    const entities = this.tilemapLayers.entities;
+    const entitiesTileIndexes = entities.filterTiles(
+      (tile) => tile.index !== -1
+    );
+    return entitiesTileIndexes;
+  }
+
+  getBotEnemyClassByConfig(config) {
+    let enemy = null;
+
+    switch (config.type) {
+      case "tank":
+        enemy = new TankBot(this, config);
+        break;
+      case "gun_soldier":
+      case "bazooka_soldier":
+        enemy = new SoldierBot(this, config);
+        break;
+      case "helicopter":
+        enemy = new HelicopterBot(this, config);
+        break;
+    }
+    return enemy;
+  }
+
+  createAndAddEnemy(enemyConfig, tileIndex) {
+    const enemy = this.getBotEnemyClassByConfig(enemyConfig).setPosition(
+      tileIndex.x * tileIndex.width,
+      tileIndex.y * tileIndex.width
+    );
+
+    this.enemies.push(enemy);
+    this.addBotEntityCollisions(enemy);
+  }
+
+  createEnemies() {
+    const entitiesTileIndexes = this.getEntitiesTileIndexes();
+
+    for (const tileIndex of entitiesTileIndexes) {
+      const enemyConfig = botEnemiesConfigIndex.find(
+        (config) => config.map.index === tileIndex.index
+      );
+
+      this.createAndAddEnemy(enemyConfig, tileIndex);
+    }
+  }
+
+  //! /////////////////////////////////////////////////////////////////////////////
+
+  setWorldBounds(width, height) {
     this.physics.world.setBounds(0, 0, width, height);
   }
 
@@ -91,7 +157,7 @@ export default class PlayScene extends Phaser.Scene {
       cameraY
     );
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
-    this.setWorldBounce(worldWidth, worldHeight);
+    this.setWorldBounds(worldWidth, worldHeight);
   }
 
   updatePlayer() {
@@ -111,25 +177,25 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    const config = PLAYER_CONFIG;
+    const config = playerConfig;
     const player = new Player(this, config);
 
     return player;
   }
 
-  createEnemy() {
-    const config = ENEMY_CONFIG;
-    const enemy = new Enemy(this, config);
-    this.addEnemyCollisions(enemy);
-    this.enemies.push(enemy);
+  // createEnemy() {
+  //   const config = ENEMY_CONFIG;
+  //   const enemy = new Enemy(this, config);
+  //   this.addBotEntityCollisions(enemy);
+  //   this.enemies.push(enemy);
 
-    return enemy;
-  }
+  //   return enemy;
+  // }
 
   createBotSoldier() {
     const config = BOT_BAZOOKA_SOLDIER_CONFIG; // BOT_BAZOOKA_SOLDIER_CONFIG  BOT_GUN_SOLDIER_CONFIG
     const botSoldier = new SoldierBot(this, config);
-    this.addEnemyCollisions(botSoldier);
+    this.addBotEntityCollisions(botSoldier);
     this.enemies.push(botSoldier);
 
     return botSoldier;
@@ -138,7 +204,7 @@ export default class PlayScene extends Phaser.Scene {
   createBotHelicopter() {
     const config = BOT_HELICOPTER_CONFIG;
     const botHelicopter = new HelicopterBot(this, config);
-    this.addEnemyCollisions(botHelicopter);
+    this.addBotEntityCollisions(botHelicopter);
     this.enemies.push(botHelicopter);
 
     return botHelicopter;
@@ -147,7 +213,7 @@ export default class PlayScene extends Phaser.Scene {
   createBotTank() {
     const config = BOT_TANK_CONFIG;
     const botTank = new TankBot(this, config);
-    this.addEnemyCollisions(botTank);
+    this.addBotEntityCollisions(botTank);
     this.enemies.push(botTank);
 
     return botTank;
@@ -156,26 +222,26 @@ export default class PlayScene extends Phaser.Scene {
   addPlayerCollisions() {
     // this.addPlayerBulletToEnemyCollisions();
     this.addPlayerToEnemyCollision();
-    this.addPlayerCollisionWithObstacles();
-    this.addTargetBulletsCollisionWithObstacles(this.player);
+    this.addPlayerCollisionWithMapObstacles();
+    this.addTargetBulletsCollisionWithMapObstacles(this.player);
   }
 
-  addEnemyCollisions(enemy) {
-    this.addTargetBulletsCollisionWithObstacles(enemy);
+  addBotEntityCollisions(enemy) {
+    this.addTargetBulletsCollisionWithMapObstacles(enemy);
     this.addTargetBulletToPlayerCollision(enemy);
     this.addPlayerBulletWithTargetCollisions(enemy);
   }
 
-  addPlayerCollisionWithObstacles() {
-    const obstacles = this.tilemapLayers.obstacles;
-    this.physics.add.collider(this.player, obstacles);
+  addPlayerCollisionWithMapObstacles() {
+    const collision = this.tilemapLayers.collision;
+    this.physics.add.collider(this.player, collision);
   }
 
-  addTargetBulletsCollisionWithObstacles(target) {
+  addTargetBulletsCollisionWithMapObstacles(target) {
     const targetBullets = target.getActiveBullets();
-    const obstacles = this.tilemapLayers.obstacles;
+    const collision = this.tilemapLayers.collision;
 
-    this.physics.add.collider(targetBullets, obstacles, (bullet) => {
+    this.physics.add.collider(targetBullets, collision, (bullet) => {
       target.turnOffBullet(bullet);
     });
   }

@@ -1,9 +1,9 @@
-import { MOUSE_POINTER_CONFIG } from "../gameConfig";
+import mousePointerConfig from "../config/mousePointer/mousePointerConfig";
 
 export default class MousePointerManager {
   constructor(scene) {
     this.scene = scene;
-    this.config = MOUSE_POINTER_CONFIG;
+    this.config = mousePointerConfig;
     this.image = this.config.image;
     scene.add.existing(this);
     this.autoStart = this.config.autoStart;

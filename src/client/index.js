@@ -3,7 +3,7 @@ import PreloadScene from "./scenes/PreloadScene";
 import PlayScene from "./scenes/PlayScene";
 import HudScene from "./scenes/HudScene";
 import GameOverScene from "./scenes/GameOverScene";
-import { GAME_WIDTH, GAME_HEIGHT } from "./gameConfig";
+import { GAME_WIDTH, GAME_HEIGHT } from "./config/game/gameConfig";
 // import "../../css/game.css";
 
 const config = {

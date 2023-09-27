@@ -1,4 +1,4 @@
-import { TANK_SPRITE_STRUCTURE } from "../gameConfig";
+import tankStructureConfig from "../config/player/tankStructureConfig";
 import calculateRotationProperties from "../helper/calculateRotationProperties";
 import AnimationManager from "../utils/AnimationManager";
 import TankBars from "../components/TankBarsLabel";
@@ -55,14 +55,14 @@ export default class Entity extends Phaser.GameObjects.Container {
   }
 
   createBody(x, y) {
-    const sprite = TANK_SPRITE_STRUCTURE.body(this.spriteID);
+    const sprite = tankStructureConfig.body(this.spriteID);
     const body = this.scene.add.image(x, y, sprite).setOrigin(0.5, 0.5);
 
     return body;
   }
 
   createGun(x, y) {
-    const sprite = TANK_SPRITE_STRUCTURE.gun(this.spriteID);
+    const sprite = tankStructureConfig.gun(this.spriteID);
     const gun = this.scene.add.image(x, y, sprite).setOrigin(0.5, 0.5);
 
     return gun;
@@ -92,7 +92,7 @@ export default class Entity extends Phaser.GameObjects.Container {
 
   addPhysics() {
     this.scene.physics.world.enableBody(this);
-    this.body.setCollideWorldBounds(true);
+    // this.body.setCollideWorldBounds(true);
     this.body.allowGravity = false;
     this.body.immovable = false;
     this.setUpPhysicBody();

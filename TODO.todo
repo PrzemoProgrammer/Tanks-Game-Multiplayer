@@ -3,12 +3,10 @@
 - handle your dead: make usable respawn function in entity class
 - healthbar hp percent in hud scene
 - add sounds
-- add NPC: Infantry, vehicles, helicopters, and airplanes
 - Add a second type of attack that hits air units. Like flak cannons
 - create a robot which can transform to tank
 - change to typescript
 - make loading screen
-- add new collide layer to tilemap
 
 
 

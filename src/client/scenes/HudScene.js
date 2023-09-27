@@ -1,4 +1,5 @@
-import { GAME_WIDTH, GAME_HEIGHT, HUD_CONFIG } from "../gameConfig";
+import { GAME_WIDTH, GAME_HEIGHT } from "../config/game/gameConfig";
+import hudConfig from "../config/hudScene/hudSceneConfig";
 import HudHealthBar from "../components/HudHealthBar";
 import HurtScreen from "../components/HurtScreen";
 
@@ -17,7 +18,7 @@ export default class HudScene extends Phaser.Scene {
   update() {}
 
   create() {
-    this.config = HUD_CONFIG;
+    this.config = hudConfig;
     this.hurtScreen = this.createRedHurtScreen();
     this.healthBar = this.createHealthBar();
     this.energyBar = this.createEnergyBar();

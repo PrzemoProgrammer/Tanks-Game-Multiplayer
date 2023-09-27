@@ -1,4 +1,4 @@
-import { ASSETS_CONFIG } from "../gameConfig";
+import assetsConfig from "../config/assets/assetsConfig";
 import createAnim from "../helper/createAnim";
 import loadSpriteSheetsData from "../assets/images/loadSprtiesheetsData.json";
 import loadImagesData from "../assets/images/loadImagesData.json";
@@ -8,7 +8,7 @@ import createAnimsDataIndex from "../assets/images/createAnimsIndex";
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super("PreloadScene");
-    const { images, audio } = ASSETS_CONFIG;
+    const { images, audio } = assetsConfig;
 
     this.imagePath = images.path;
     this.imageExtension = images.extension;

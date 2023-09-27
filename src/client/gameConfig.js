@@ -1,9 +1,5 @@
-export const GAME_WIDTH = 1920;
-export const GAME_HEIGHT = 1080;
-export const START_ENEMY_X_RESPAWN = 50;
-export const END_ENEMY_X_RESPAWN = GAME_HEIGHT - START_ENEMY_X_RESPAWN;
-export const ENEMY_Y_RESPAWN = -200;
-export const ENEMY_Y_LIMIT = GAME_HEIGHT + 100;
+export const GAME_WIDTH = 1280;
+export const GAME_HEIGHT = 720;
 
 export const ASSETS_CONFIG = {
   images: {
@@ -31,7 +27,7 @@ export const MOUSE_POINTER_CONFIG = {
 };
 
 export const BOT_TANK_CONFIG = {
-  x: GAME_WIDTH / 2,
+  x: GAME_WIDTH / 2 + 300,
   y: GAME_HEIGHT + 250,
   spriteID: 0,
   moveSpeed: 200,
@@ -97,7 +93,7 @@ export const BOT_TANK_CONFIG = {
 };
 
 export const BOT_HELICOPTER_CONFIG = {
-  x: GAME_WIDTH / 2 - 600,
+  x: GAME_WIDTH / 2 - 300,
   y: GAME_HEIGHT + 100,
   spriteID: 0,
   moveSpeed: 200,
@@ -163,7 +159,7 @@ export const BOT_HELICOPTER_CONFIG = {
 };
 
 export const BOT_GUN_SOLDIER_CONFIG = {
-  x: GAME_WIDTH / 2 + 200,
+  x: GAME_WIDTH / 2 + 600,
   y: GAME_HEIGHT - 60,
   spriteID: 0,
   moveSpeed: 200,
@@ -229,7 +225,7 @@ export const BOT_GUN_SOLDIER_CONFIG = {
 };
 
 export const BOT_BAZOOKA_SOLDIER_CONFIG = {
-  x: GAME_WIDTH / 2 + 200,
+  x: GAME_WIDTH / 2 + 600,
   y: GAME_HEIGHT - 60,
   spriteID: 1,
   moveSpeed: 200,
@@ -295,7 +291,7 @@ export const BOT_BAZOOKA_SOLDIER_CONFIG = {
 };
 
 export const PLAYER_CONFIG = {
-  x: GAME_WIDTH / 2,
+  x: GAME_WIDTH / 2 + 300,
   y: GAME_HEIGHT - 90,
   spriteID: 1,
   speed: 200,
@@ -303,12 +299,14 @@ export const PLAYER_CONFIG = {
   shootDelay: 100,
   map: {
     tilemap: {
-      JSONKey: "BattleMap_1",
+      JSONKey: "ArmyGameMaps",
       image: "battle_map_1",
     },
     layers: {
       ground: "Ground",
-      obstacles: "Obstacles",
+      objects: "Objects",
+      collision: "Collision",
+      entities: "Entities",
     },
   },
   body: {
