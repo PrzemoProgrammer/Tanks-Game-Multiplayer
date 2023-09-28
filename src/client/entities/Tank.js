@@ -23,6 +23,7 @@ export default class Tank extends Bot {
   handleShoot(x, y) {
     if (!this.isAlive) return;
     if (!this.isInAttackRange(x, y)) return;
+    this.handleRotation(x, y);
     if (!this.canShootAttack()) return;
     this.shoot();
     this.playShootAnim(() => {

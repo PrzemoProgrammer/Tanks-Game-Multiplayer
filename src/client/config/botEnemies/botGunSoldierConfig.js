@@ -9,7 +9,7 @@ export default {
   startAttackRange: 500,
   type: "gun_soldier",
   map: {
-    index: 3169,
+    index: 2681,
   },
   spriteStructure: {
     top: `soldier-spritesheet-0`,

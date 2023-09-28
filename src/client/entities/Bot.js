@@ -43,6 +43,7 @@ export default class Bot extends Phaser.GameObjects.Container {
     this.addPhysics();
     this.shootingAbility = this.createShootingAbility();
     this.playIdle();
+
     //! /////////////////////////////////
     // this.scene.time.addEvent({
     //   delay: 100,
@@ -299,7 +300,9 @@ export default class Bot extends Phaser.GameObjects.Container {
   handleShoot(x, y) {
     if (!this.isAlive) return;
     if (!this.isInAttackRange(x, y)) return;
+    this.handleRotation(x, y);
     if (!this.canShootAttack()) return;
+
     this.shoot();
     this.playShootAnim(() => {
       this.playIdleAnims();

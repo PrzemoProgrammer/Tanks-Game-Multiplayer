@@ -9,7 +9,7 @@ export default {
   startAttackRange: 500,
   type: "tank",
   map: {
-    index: 3169,
+    index: 3020,
   },
   spriteStructure: {
     top: `tank-sprite-0`,

@@ -6,7 +6,9 @@ export default class Helicopter extends Bot {
     super(scene, config);
     this.scene = scene;
 
+    this.setDepth(998);
     this.setupDestroyAnim();
+
     //! /////////////////////////////////
     // this.scene.time.addEvent({
     //   delay: 100,
@@ -19,6 +21,7 @@ export default class Helicopter extends Bot {
   update() {
     if (!this.isAlive) return;
     this.updateHealthBarPosition();
+
     // this.moveRight();
   }
 
@@ -55,6 +58,7 @@ export default class Helicopter extends Bot {
   handleShoot(x, y) {
     if (!this.isAlive) return;
     if (!this.isInAttackRange(x, y)) return;
+    this.handleRotation(x, y);
     if (!this.canShootAttack()) return;
     this.shoot();
   }

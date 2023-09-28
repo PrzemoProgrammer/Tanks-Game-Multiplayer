@@ -9,7 +9,7 @@ export default {
   startAttackRange: 500,
   type: "helicopter",
   map: {
-    index: 3169,
+    index: 2373,
   },
   spriteStructure: {
     top: `helicopter-sprite-0`,

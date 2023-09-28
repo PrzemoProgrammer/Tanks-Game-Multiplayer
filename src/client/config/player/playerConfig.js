@@ -1,6 +1,6 @@
 export default {
-  x: 1260,
-  y: 990,
+  x: 3352,
+  y: 3804,
   spriteID: 1,
   speed: 200,
   turnForce: 1,
@@ -49,7 +49,7 @@ export default {
     health: {
       image: "tank-healthbar",
       containerImage: "tank-health-bar-container",
-      max: 1000,
+      max: 3000,
       offsetX: 0,
       offsetY: -130,
     },
@@ -58,7 +58,7 @@ export default {
       imageWidth: 17,
       containerImage: "tank-ammo-bar-container",
       resetDelayTime: 1000,
-      ammoCount: 5,
+      ammoCount: 10,
       maxAmmo: 10,
       offsetX: -100,
       offsetY: -100,
