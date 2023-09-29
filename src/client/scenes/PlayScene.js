@@ -1,14 +1,3 @@
-import {
-  // GAME_WIDTH,
-  // GAME_HEIGHT,
-  // PLAYER_CONFIG,
-  // ENEMY_CONFIG,
-  BOT_GUN_SOLDIER_CONFIG,
-  BOT_BAZOOKA_SOLDIER_CONFIG,
-  BOT_HELICOPTER_CONFIG,
-  BOT_TANK_CONFIG,
-} from "../gameConfig";
-
 import { GAME_WIDTH, GAME_HEIGHT } from "../config/game/gameConfig";
 import playerConfig from "../config/player/playerConfig";
 import botEnemiesConfigIndex from "../config/botEnemies/configsIndex";
@@ -165,8 +154,8 @@ export default class PlayScene extends Phaser.Scene {
       const enemy = this.enemies[i];
       enemy.update();
       this.checkEntityBulletRange(enemy);
-      // enemy.handleRotation(x, y);
-      enemy.handleShoot(x, y);
+      // enemy.handleRotation(x, y); //! unit rotation is updated in the handleShoot method ( enemy.handleShoot(x, y) )
+      enemy.handleShoot(x, y); //! comment this so that units don't attack
     }
   }
 
@@ -261,27 +250,27 @@ export default class PlayScene extends Phaser.Scene {
 
   updateVisibleTiles() {
     const camera = this.cameras.main;
-    const tilemapLayers = this.tilemapLayers; // Twoje warstwy tilemapy
+    const tilemapLayers = this.tilemapLayers; // Your tilemap layers
 
-    // Pobierz aktualne położenie kamery
+    // Get the current camera position
     const cameraX = camera.scrollX;
     const cameraY = camera.scrollY;
 
-    // Pobierz wymiary widoku kamery
+    // Get camera view dimensions
     const cameraWidth = camera.width;
     const cameraHeight = camera.height;
 
-    // Iteruj przez wszystkie warstwy tilemapy, które chcesz dostosować
+    // Iterate through all the tilemap layers you want to adjust
     for (const layerName in tilemapLayers) {
       const layer = tilemapLayers[layerName];
 
-      // Pobierz indeksy kafelków, które są obecnie widoczne w widoku kamery
+      // Get the indexes of the tiles that are currently visible in the camera view
       const leftTile = Math.floor(cameraX / layer.tileWidth);
       const rightTile = Math.ceil((cameraX + cameraWidth) / layer.tileWidth);
       const topTile = Math.floor(cameraY / layer.tileHeight);
       const bottomTile = Math.ceil((cameraY + cameraHeight) / layer.tileHeight);
 
-      // Ustaw kafelki poza widokiem kamery na niewidoczne
+      // Set tiles outside camera view to invisible
       layer.forEachTile(function (tile) {
         const tileX = tile.x;
         const tileY = tile.y;

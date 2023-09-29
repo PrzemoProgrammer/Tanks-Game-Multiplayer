@@ -4,7 +4,7 @@ export default {
   spriteID: 1,
   speed: 200,
   turnForce: 1,
-  shootDelay: 100,
+  shootDelay: 500,
   map: {
     tilemap: {
       JSONKey: "ArmyGameMaps",

@@ -1,4 +1,4 @@
-import { GAME_WIDTH, GAME_HEIGHT } from "../gameConfig";
+import { GAME_WIDTH, GAME_HEIGHT } from "../config/game/gameConfig";
 
 export default class HurtScreen extends Phaser.GameObjects.Image {
   constructor(scene, config) {
