@@ -33,8 +33,8 @@ export default class Bot extends Phaser.GameObjects.Container {
     this.canAttack = true;
     this.isAlive = true;
 
-    this.topSprite = this.createTop();
-    this.downSprite = this.createDown();
+    this.topSprite = this.createTopSprite();
+    this.downSprite = this.createDownSprite();
     this.healthBar = this.createHealthBar();
     this.destroyAnim = this.createDestroyAnim();
 
@@ -59,14 +59,14 @@ export default class Bot extends Phaser.GameObjects.Container {
     // this.moveRight();
   }
 
-  createTop() {
+  createTopSprite() {
     const sprite = this.config.spriteStructure.top;
     const body = this.scene.add.sprite(0, 0, sprite).setOrigin(0.5, 0.5);
 
     return body;
   }
 
-  createDown() {
+  createDownSprite() {
     const sprite = this.config.spriteStructure.down;
     const legs = this.scene.add.sprite(0, 0, sprite).setOrigin(0.5, 0.5);
 

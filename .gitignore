@@ -9,6 +9,7 @@ Thumbs.db
 # Vendors
 node_modules/
 
+TankWarFromUpworkAllAssetsAndNeeds/
 # Build
 dist/
 /npm-debug.log
